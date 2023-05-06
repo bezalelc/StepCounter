@@ -1,7 +1,9 @@
 package com.yehonatand_bezalelc.stepcounter;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,12 +95,12 @@ public class MainActivity extends AppCompatActivity {
 //            alertDialog.show();
             Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
         } else if (menuItem.getTitle().equals(MenuItemType.setting.toString())) {
-            Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         } else if (menuItem.getTitle().equals(MenuItemType.exit.toString())) {
             Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(menuItem);
     }
-
-
 }
