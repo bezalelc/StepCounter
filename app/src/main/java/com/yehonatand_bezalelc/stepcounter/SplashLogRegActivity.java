@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 
 public class SplashLogRegActivity extends AppCompatActivity implements CallbackFragment {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,21 +19,12 @@ public class SplashLogRegActivity extends AppCompatActivity implements CallbackF
         if (!userConnected()) {
             LoginFragment loginFragment = new LoginFragment(this);
             if (savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .setReorderingAllowed(true)
-                        .add(R.id.fragment_container_login_register, loginFragment, null)
-                        .commit();
+                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_container_login_register, loginFragment, null).commit();
+            } else {
+                // TODO show splash 5 sec
             }
         }
     }
-
-//    public void replaceFragment(Fragment fragment) {
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.addToBackStack(null);
-//        fragmentTransaction.replace(R.id.fragment_container_login_register, fragment);
-//        fragmentTransaction.commit();
-//    }
 
 
     private boolean userConnected() {
@@ -42,15 +32,16 @@ public class SplashLogRegActivity extends AppCompatActivity implements CallbackF
     }
 
 
-//    public void replaceFragment()
     @Override
-    public void changeFragment(boolean login) {
+    public void changeFragment(FragmentType fragmentType) {
         LoginRegisterFragment fragment;
-        if (login) {
+        // TODO change to factory
+        if (fragmentType == FragmentType.LOGIN) {
             fragment = new LoginFragment(this);
         } else {
             fragment = new RegisterFragment(this);
         }
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.addToBackStack(null);

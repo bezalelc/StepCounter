@@ -12,11 +12,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+///**
+// * A simple {@link Fragment} subclass.
+// * Use the {@link LoginFragment#newInstance} factory method to
+// * create an instance of this fragment.
+// */
 public class LoginFragment extends LoginRegisterFragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -26,7 +26,7 @@ public class LoginFragment extends LoginRegisterFragment {
     // TODO: Rename and change types of parameters
 //    private String mParam1;
 //    private String mParam2;
-    Button buttonLogin, buttonRegister;
+    Button buttonLogin, buttonRegister, buttonForget;
     EditText editTextUsername, editTextPassword;
 //    CallbackFragment callbackFragment;
 
@@ -54,7 +54,7 @@ public class LoginFragment extends LoginRegisterFragment {
 //    }
 
 
-//    @Override
+    //    @Override
 //    public void onCreate(Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
 ////        if (getArguments() != null) {
@@ -64,20 +64,26 @@ public class LoginFragment extends LoginRegisterFragment {
 //
 //
 //    }
+    private boolean login(String username, String password) {
+        return true;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+
         buttonLogin = view.findViewById(R.id.buttonLogin);
         editTextUsername = view.findViewById(R.id.editTextUserName);
         editTextPassword = view.findViewById(R.id.editTextPassword);
+        buttonForget = view.findViewById(R.id.buttonForget);
         buttonRegister = view.findViewById(R.id.buttonRegister);
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (true) {
+                if (login(editTextUsername.getText().toString(),
+                        editTextPassword.getText().toString())) {
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
                 }
@@ -86,7 +92,7 @@ public class LoginFragment extends LoginRegisterFragment {
 
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                callbackFragment.changeFragment(false);
+                callbackFragment.changeFragment(FragmentType.REGISTER);
             }
         });
 

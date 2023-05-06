@@ -12,11 +12,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RegisterFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+///**
+// * A simple {@link Fragment} subclass.
+// * Use the {@link RegisterFragment#newInstance} factory method to
+// * create an instance of this fragment.
+// */
 public class RegisterFragment extends LoginRegisterFragment {
 
     Button buttonRegister, buttonLogin;
@@ -36,15 +36,15 @@ public class RegisterFragment extends LoginRegisterFragment {
 //    private String mParam2;
 
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RegisterFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+//    /**
+//     * Use this factory method to create a new instance of
+//     * this fragment using the provided parameters.
+//     *
+//     * @param param1 Parameter 1.
+//     * @param param2 Parameter 2.
+//     * @return A new instance of fragment RegisterFragment.
+//     */
+//    // TODO: Rename and change types and number of parameters
 //    public static RegisterFragment newInstance(String param1, String param2) {
 //        RegisterFragment fragment = new RegisterFragment();
 //        Bundle args = new Bundle();
@@ -62,6 +62,11 @@ public class RegisterFragment extends LoginRegisterFragment {
 //            mParam2 = getArguments().getString(ARG_PARAM2);
 //        }
 //    }
+
+    private boolean register(String mail, String password) {
+        return true;
+    }
+
     @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,7 +79,8 @@ public class RegisterFragment extends LoginRegisterFragment {
 
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (true) {
+                if (register(editTextUsername.getText().toString(),
+                        editTextPassword.getText().toString())) {
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
                 }
@@ -83,7 +89,7 @@ public class RegisterFragment extends LoginRegisterFragment {
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                callbackFragment.changeFragment(true);
+                callbackFragment.changeFragment(FragmentType.LOGIN);
             }
         });
 
