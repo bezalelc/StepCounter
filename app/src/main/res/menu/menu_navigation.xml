@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+<!--    <item-->
+<!--        android:id="@+id/dashboard"-->
+<!--        android:icon="@drawable/dashboard"-->
+<!--        android:title="Dashboard" />-->
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/home_black_48dp"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/summery"
+        android:icon="@drawable/summery_black_48dp"
+        android:title="Summery" />
+
+</menu>
