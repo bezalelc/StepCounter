@@ -31,10 +31,6 @@
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".SplashLogRegActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustPan|adjustResize" />
-        <activity
             android:name=".MainActivity"
             android:exported="false" />
     </application>
