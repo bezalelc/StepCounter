@@ -31,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (dbPipeline.register(editTextUsername.getText().toString(), "mail", 0, 0f,
                         editTextPassword.getText().toString())) {
-                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                    startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                 }
             }
         });

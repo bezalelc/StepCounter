@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (dbPipeline.login(editTextUsername.getText().toString(),
                         editTextPassword.getText().toString())) {
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                 }
             }
         });
