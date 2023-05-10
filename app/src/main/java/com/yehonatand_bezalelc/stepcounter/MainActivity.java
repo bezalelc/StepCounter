@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,17 +19,13 @@ import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
-//    private enum MenuItemType {
-//        about,
-//        setting,
-//        exit
-//    }
 
     BottomNavigationView bottomNavigationView;
 
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
