@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Window;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -14,6 +15,7 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
@@ -27,7 +29,7 @@ public class SplashActivity extends AppCompatActivity {
 //                else
 //                    intent = new Intent(SplashActivity.this, MainActivity.class);
 ////                startActivity(new Intent(SplashActivity.this, nextActivity));
-                startActivity(new Intent(SplashActivity.this, userConnected() ? MainActivity.class : LoginActivity.class));
+                startActivity(new Intent(SplashActivity.this, userConnected() ? HomeActivity.class : LoginActivity.class));
                 finish();
             }
         }, 2000);
