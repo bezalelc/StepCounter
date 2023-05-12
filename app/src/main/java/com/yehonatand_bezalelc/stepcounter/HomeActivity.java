@@ -1,8 +1,10 @@
 package com.yehonatand_bezalelc.stepcounter;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,15 +26,16 @@ import androidx.core.content.ContextCompat;
 import org.checkerframework.common.subtyping.qual.Bottom;
 
 
-public class HomeActivity extends MainActivity {
-    private int steps = 0;
-    private SensorManager sensorManager;
-    private Sensor sensorStepCounter;
-    private boolean isStepCounterSensorRunning = false;
+public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
     private TextView textViewStepsTaken;
     private Button startButton, stopButton;
+    private StepCounterService.StepCounterBinder binder;
+    private boolean bound = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
 
+    /*
+    Main activity functions
+     */
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_home;
@@ -47,9 +51,14 @@ public class HomeActivity extends MainActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         textViewStepsTaken = findViewById(R.id.textViewStepsTaken);
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
+
+        checkActivityRecognitionPermission();
+        Intent serviceIntent = new Intent(this, StepCounterService.class);
+        bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -61,52 +70,21 @@ public class HomeActivity extends MainActivity {
                 stopStepCounterService();
             }
         });
-
-        PackageManager packageManager = getPackageManager();
-//        TODO check if sensor exist
-//        boolean b = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER);
-
-        checkActivityRecognitionPermission();
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
-//            sensorStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-//            isStepCounterSensorRunning = true;
-//            Toast.makeText(this, "true" + steps, Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(this, "false" + steps, Toast.LENGTH_SHORT).show();
-//            isStepCounterSensorRunning = false;
-//        }
     }
 
-    public void startStepCounterService() {
-        if (!StepCounterService.isRunning()) {
-            Intent serviceIntent = new Intent(this, StepCounterService.class);
-            startService(serviceIntent);
-        }
-    }
-
-    public void stopStepCounterService() {
-        if (StepCounterService.isRunning()) {
-            Intent serviceIntent = new Intent(this, StepCounterService.class);
-            stopService(serviceIntent);
-        }
-    }
-
-    // Function to check and request permission.
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    public void checkActivityRecognitionPermission() {
+    private void checkActivityRecognitionPermission() {
+        // TODO handle 1. ACTIVITY_RECOGNITION not exist , 2. PERMISSION_DENIED
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)) {
+            Toast.makeText(HomeActivity.this, "ACTIVITY_RECOGNITION not found in device", Toast.LENGTH_SHORT).show();
+        }
         if (ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
-
-            // Requesting the permission
+            // Requesting ACTIVITY_RECOGNITION permission
             ActivityCompat.requestPermissions(HomeActivity.this, new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION}, ACTIVITY_RECOGNITION_PERMISSION_CODE);
         } else {
             Toast.makeText(HomeActivity.this, "ACTIVITY_RECOGNITION Permission already granted", Toast.LENGTH_SHORT).show();
         }
     }
-    // This function is called when the user accepts or decline the permission.
-    // Request Code is used to check which permission called this function.
-    // This request code is provided when the user is prompt for permission.
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -121,49 +99,65 @@ public class HomeActivity extends MainActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        isStepCounterSensorRunning = true;
-//        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-//        if (sensor != null) {
-//            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
-//        } else {
-//            Toast.makeText(this, "false " + steps, Toast.LENGTH_SHORT).show();
-//        }
-//        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
-//            sensorManager.registerListener(this, sensorStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
-//        }
+
+    public void startStepCounterService() {
+        Intent stepCounterService = new Intent(this, StepCounterService.class);
+        bindService(new Intent(this, StepCounterService.class), this, Context.BIND_AUTO_CREATE);
+        startService(stepCounterService);
+    }
+
+    public void stopStepCounterService() {
+        Intent stepCounterService = new Intent(this, StepCounterService.class);
+        stopService(stepCounterService);
+
+        if (bound) {
+            unbindService(this);
+            bound = false;
+        }
+
+
+        // Remove the notification when the service is stopped
+        if (binder != null && binder.getService() != null) {
+            binder.getService().stopForeground(true);
+        }
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        isStepCounterSensorRunning = false;
-//        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
-//            sensorManager.unregisterListener(this, sensorStepCounter);
-//        }
+    public void onStepCountChanged(int stepCount) {
+        updateStepCount(stepCount);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-//    @SuppressLint("SetTextI18n")
-//    @Override
-//    public void onSensorChanged(SensorEvent sensorEvent) {
-//        if (isStepCounterSensorRunning) {
-////            Toast.makeText(this, "steps " + sensorEvent.values[0], Toast.LENGTH_SHORT).show();
-//            textViewStepsTaken.setText(Integer.toString((int) sensorEvent.values[0]));
-//        }
-//
-////        if (sensorEvent.sensor == sensorStepCounter) {
-////            steps = (int) sensorEvent.values[0];
-////            Toast.makeText(this, "steps " + steps, Toast.LENGTH_SHORT).show();
-////        }
-//    }
-//
-//    @Override
-//    public void onAccuracyChanged(Sensor sensor, int i) {
-//
-//    }
+        if (bound) {
+            unbindService(this);
+        }
+    }
 
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder service) {
+        StepCounterService.StepCounterBinder binder = (StepCounterService.StepCounterBinder) service;
+        this.binder = binder;
+        bound = true;
+        binder.getService().addObserver(this);
+    }
 
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+        if (binder != null) {
+            binder.getService().removeObserver(this);
+        }
+        bound = false;
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void updateStepCount(int stepCount) {
+        if (bound) {
+            textViewStepsTaken.setText(Integer.toString(stepCount));
+        } else {
+            textViewStepsTaken.setText("#0");
+        }
+    }
 }
