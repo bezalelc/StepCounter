@@ -32,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (dbPipeline.register(editTextUsername.getText().toString(), "mail", 0, 0f,
                         editTextPassword.getText().toString())) {
                     startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
+                    finish();
                 }
             }
         });
@@ -39,6 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                finish();
             }
         });
     }

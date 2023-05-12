@@ -20,6 +20,7 @@ public class SettingActivity extends AppCompatActivity {
         settingBackButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startActivity(new Intent(SettingActivity.this, HomeActivity.class));
+                finish();
             }
         });
     }
