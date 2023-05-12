@@ -5,11 +5,15 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.BatteryManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -48,6 +52,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         startForeground(1, createNotification());
+        registerBatteryReceiver();
         return START_STICKY;
     }
 
@@ -55,9 +60,8 @@ public class StepCounterService extends Service implements SensorEventListener, 
     public void onDestroy() {
         super.onDestroy();
 
-        if (stepSensor != null) {
-            sensorManager.unregisterListener(this, stepSensor);
-        }
+        sensorManager.unregisterListener(this, stepSensor);
+        unregisterBatteryReceiver();
     }
 
     @Override
@@ -126,5 +130,36 @@ public class StepCounterService extends Service implements SensorEventListener, 
                 .setContentIntent(pendingIntent);
 
         return builder.build();
+    }
+
+    private BroadcastReceiver batteryReceiver;
+
+    private static final int BATTERY_LEVEL_THRESHOLD = 15;
+
+    private static final int NOTIFICATION_ID = 1;
+    private static final String CHANNEL_ID = "step_counter_channel";
+
+    private void registerBatteryReceiver() {
+        batteryReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())) {
+                    int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                    int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                    int batteryLevel = (int) (level / (float) scale * 100);
+
+                    if (batteryLevel < BATTERY_LEVEL_THRESHOLD) {
+                        stopSelf();
+                    }
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        registerReceiver(batteryReceiver, filter);
+    }
+
+    private void unregisterBatteryReceiver() {
+        unregisterReceiver(batteryReceiver);
     }
 }
