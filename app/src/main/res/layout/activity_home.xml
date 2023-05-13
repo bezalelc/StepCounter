@@ -36,7 +36,7 @@
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/steps"
+        android:id="@+id/textViewSteps"
         android:layout_width="115dp"
         android:layout_height="wrap_content"
         android:text="Steps"

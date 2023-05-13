@@ -6,10 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -23,12 +19,9 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import org.checkerframework.common.subtyping.qual.Bottom;
-
 
 public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
-    private TextView textViewStepsTaken;
-    private Button startButton, stopButton;
+    private TextView textViewStepsTaken, textViewSteps;
     private StepCounterService.StepCounterBinder binder;
     private boolean bound = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
@@ -52,13 +45,12 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        textViewStepsTaken = findViewById(R.id.textViewStepsTaken);
-        startButton = findViewById(R.id.startButton);
-        stopButton = findViewById(R.id.stopButton);
-
         checkActivityRecognitionPermission();
-        Intent serviceIntent = new Intent(this, StepCounterService.class);
-        bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
+
+        textViewStepsTaken = findViewById(R.id.textViewStepsTaken);
+        textViewSteps = findViewById(R.id.textViewSteps);
+        Button startButton = findViewById(R.id.startButton);
+        Button stopButton = findViewById(R.id.stopButton);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -70,6 +62,14 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
                 stopStepCounterService();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (bound) {
+            unbindService(this);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -86,6 +86,23 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         }
     }
 
+    public void startStepCounterService() {
+        Intent stepCounterServiceIntent = new Intent(this, StepCounterService.class);
+        startService(stepCounterServiceIntent);
+        bindService(stepCounterServiceIntent, this, Context.BIND_AUTO_CREATE);
+    }
+
+
+    public void stopStepCounterService() {
+        if (bound) {
+            unbindService(this);
+            bound = false;
+        }
+
+        Intent serviceIntent = new Intent(this, StepCounterService.class);
+        stopService(serviceIntent);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -100,56 +117,26 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     }
 
 
-    public void startStepCounterService() {
-        Intent stepCounterService = new Intent(this, StepCounterService.class);
-        bindService(new Intent(this, StepCounterService.class), this, Context.BIND_AUTO_CREATE);
-        startService(stepCounterService);
-    }
-
-    public void stopStepCounterService() {
-        Intent stepCounterService = new Intent(this, StepCounterService.class);
-        stopService(stepCounterService);
-
-        if (bound) {
-            unbindService(this);
-            bound = false;
-        }
-
-
-        // Remove the notification when the service is stopped
-        if (binder != null && binder.getService() != null) {
-            binder.getService().stopForeground(true);
-        }
-    }
-
     @Override
     public void onStepCountChanged(int stepCount) {
         updateStepCount(stepCount);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (bound) {
-            unbindService(this);
-        }
-    }
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
-        StepCounterService.StepCounterBinder binder = (StepCounterService.StepCounterBinder) service;
-        this.binder = binder;
+        this.binder = (StepCounterService.StepCounterBinder) service;
         bound = true;
         binder.getService().addObserver(this);
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
+        bound = false;
+
         if (binder != null) {
             binder.getService().removeObserver(this);
         }
-        bound = false;
     }
 
     @SuppressLint("SetTextI18n")

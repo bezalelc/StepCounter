@@ -28,8 +28,13 @@ public class StepCounterService extends Service implements SensorEventListener, 
     private SensorManager sensorManager;
     private Sensor stepSensor;
     private int stepCount = 0;
-    private List<StepCountObserver> observers = new ArrayList<>();
+    private final List<StepCountObserver> observers = new ArrayList<>();
     private final IBinder binder = new StepCounterBinder();
+    private BroadcastReceiver batteryReceiver;
+    private static final int BATTERY_LEVEL_THRESHOLD = 76;
+    private static final int NOTIFICATION_ID = 1;
+    private static final String CHANNEL_ID = "step_counter_channel";
+    private static final String CHANNEL_NAME = "Step Counter";
 
     public class StepCounterBinder extends Binder {
         StepCounterService getService() {
@@ -46,22 +51,26 @@ public class StepCounterService extends Service implements SensorEventListener, 
 
         if (stepSensor != null) {
             sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            registerBatteryReceiver();
+            startForeground(NOTIFICATION_ID, createNotification());
         }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startForeground(1, createNotification());
-        registerBatteryReceiver();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        sensorManager.unregisterListener(this, stepSensor);
         unregisterBatteryReceiver();
+        sensorManager.unregisterListener(this, stepSensor);
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        if (notificationManager != null) {
+            notificationManager.cancel(NOTIFICATION_ID);
+        }
+        stopForeground(STOP_FOREGROUND_REMOVE);
     }
 
     @Override
@@ -100,44 +109,28 @@ public class StepCounterService extends Service implements SensorEventListener, 
         }
     }
 
-    private String createNotificationChannel() {
-        String channelId = "step_counter_channel";
-        String channelName = "Step Counter";
-        int importance = NotificationManager.IMPORTANCE_LOW;
-
-        NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+    private void createNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
         channel.setSound(null, null);
 
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         if (notificationManager != null) {
             notificationManager.createNotificationChannel(channel);
         }
-
-        return channelId;
     }
 
 
     private Notification createNotification() {
-        String channelId = createNotificationChannel();
+        createNotificationChannel();
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setContentTitle("Step Counter")
-                .setContentText("Counting steps...")
-                .setSmallIcon(R.drawable.ic_stat_directions_run)
-                .setContentIntent(pendingIntent);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle(CHANNEL_NAME).setContentText("Counting steps...").setSmallIcon(R.drawable.ic_stat_directions_run).setContentIntent(pendingIntent);
 
         return builder.build();
     }
 
-    private BroadcastReceiver batteryReceiver;
-
-    private static final int BATTERY_LEVEL_THRESHOLD = 15;
-
-    private static final int NOTIFICATION_ID = 1;
-    private static final String CHANNEL_ID = "step_counter_channel";
 
     private void registerBatteryReceiver() {
         batteryReceiver = new BroadcastReceiver() {
