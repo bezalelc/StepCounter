@@ -1,15 +1,14 @@
 package com.yehonatand_bezalelc.stepcounter;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,24 +19,16 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import org.checkerframework.common.subtyping.qual.Bottom;
-
-
-public class HomeActivity extends MainActivity {
-    private int steps = 0;
-    private SensorManager sensorManager;
-    private Sensor sensorStepCounter;
-    private boolean isStepCounterSensorRunning = false;
-    private TextView textViewStepsTaken;
-    private Button startButton, stopButton;
-
-    FirebaseAuth auth;
-    FirebaseUser user;
+public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
+    private TextView textViewStepsTaken, textViewSteps;
+    private StepCounterService.StepCounterBinder binder;
+    private boolean bound = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
 
+    /*
+    Main activity functions
+     */
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_home;
@@ -53,17 +44,13 @@ public class HomeActivity extends MainActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        textViewStepsTaken = findViewById(R.id.textViewStepsTaken);
-        startButton = findViewById(R.id.startButton);
-        stopButton = findViewById(R.id.stopButton);
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        if(user == null){
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        checkActivityRecognitionPermission();
+
+        textViewStepsTaken = findViewById(R.id.textViewStepsTaken);
+        textViewSteps = findViewById(R.id.textViewSteps);
+        Button startButton = findViewById(R.id.startButton);
+        Button stopButton = findViewById(R.id.stopButton);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -75,52 +62,46 @@ public class HomeActivity extends MainActivity {
                 stopStepCounterService();
             }
         });
-
-        PackageManager packageManager = getPackageManager();
-//        TODO check if sensor exist
-//        boolean b = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER);
-
-        checkActivityRecognitionPermission();
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
-//            sensorStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-//            isStepCounterSensorRunning = true;
-//            Toast.makeText(this, "true" + steps, Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(this, "false" + steps, Toast.LENGTH_SHORT).show();
-//            isStepCounterSensorRunning = false;
-//        }
     }
 
-    public void startStepCounterService() {
-        if (!StepCounterService.isRunning()) {
-            Intent serviceIntent = new Intent(this, StepCounterService.class);
-            startService(serviceIntent);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (bound) {
+            unbindService(this);
         }
     }
 
-    public void stopStepCounterService() {
-        if (StepCounterService.isRunning()) {
-            Intent serviceIntent = new Intent(this, StepCounterService.class);
-            stopService(serviceIntent);
-        }
-    }
-
-    // Function to check and request permission.
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    public void checkActivityRecognitionPermission() {
+    private void checkActivityRecognitionPermission() {
+        // TODO handle 1. ACTIVITY_RECOGNITION not exist , 2. PERMISSION_DENIED
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)) {
+            Toast.makeText(HomeActivity.this, "ACTIVITY_RECOGNITION not found in device", Toast.LENGTH_SHORT).show();
+        }
         if (ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
-
-            // Requesting the permission
+            // Requesting ACTIVITY_RECOGNITION permission
             ActivityCompat.requestPermissions(HomeActivity.this, new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION}, ACTIVITY_RECOGNITION_PERMISSION_CODE);
         } else {
             Toast.makeText(HomeActivity.this, "ACTIVITY_RECOGNITION Permission already granted", Toast.LENGTH_SHORT).show();
         }
     }
-    // This function is called when the user accepts or decline the permission.
-    // Request Code is used to check which permission called this function.
-    // This request code is provided when the user is prompt for permission.
+
+    public void startStepCounterService() {
+        Intent stepCounterServiceIntent = new Intent(this, StepCounterService.class);
+        startService(stepCounterServiceIntent);
+        bindService(stepCounterServiceIntent, this, Context.BIND_AUTO_CREATE);
+    }
+
+
+    public void stopStepCounterService() {
+        if (bound) {
+            unbindService(this);
+            bound = false;
+        }
+
+        Intent serviceIntent = new Intent(this, StepCounterService.class);
+        stopService(serviceIntent);
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -135,49 +116,35 @@ public class HomeActivity extends MainActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        isStepCounterSensorRunning = true;
-//        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-//        if (sensor != null) {
-//            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
-//        } else {
-//            Toast.makeText(this, "false " + steps, Toast.LENGTH_SHORT).show();
-//        }
-//        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
-//            sensorManager.registerListener(this, sensorStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
-//        }
-    }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        isStepCounterSensorRunning = false;
-//        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
-//            sensorManager.unregisterListener(this, sensorStepCounter);
-//        }
+    public void onStepCountChanged(int stepCount) {
+        updateStepCount(stepCount);
     }
 
 
-//    @SuppressLint("SetTextI18n")
-//    @Override
-//    public void onSensorChanged(SensorEvent sensorEvent) {
-//        if (isStepCounterSensorRunning) {
-////            Toast.makeText(this, "steps " + sensorEvent.values[0], Toast.LENGTH_SHORT).show();
-//            textViewStepsTaken.setText(Integer.toString((int) sensorEvent.values[0]));
-//        }
-//
-////        if (sensorEvent.sensor == sensorStepCounter) {
-////            steps = (int) sensorEvent.values[0];
-////            Toast.makeText(this, "steps " + steps, Toast.LENGTH_SHORT).show();
-////        }
-//    }
-//
-//    @Override
-//    public void onAccuracyChanged(Sensor sensor, int i) {
-//
-//    }
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder service) {
+        this.binder = (StepCounterService.StepCounterBinder) service;
+        bound = true;
+        binder.getService().addObserver(this);
+    }
 
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+        bound = false;
 
+        if (binder != null) {
+            binder.getService().removeObserver(this);
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void updateStepCount(int stepCount) {
+        if (bound) {
+            textViewStepsTaken.setText(Integer.toString(stepCount));
+        } else {
+            textViewStepsTaken.setText("#0");
+        }
+    }
 }
