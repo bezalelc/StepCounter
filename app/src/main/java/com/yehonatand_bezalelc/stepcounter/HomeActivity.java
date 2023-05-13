@@ -19,12 +19,18 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import org.checkerframework.common.subtyping.qual.Bottom;
 
 public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
     private TextView textViewStepsTaken, textViewSteps;
     private StepCounterService.StepCounterBinder binder;
     private boolean bound = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
+    FirebaseAuth auth;
+    FirebaseUser user;
 
     /*
     Main activity functions
@@ -51,6 +57,14 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         textViewSteps = findViewById(R.id.textViewSteps);
         Button startButton = findViewById(R.id.startButton);
         Button stopButton = findViewById(R.id.stopButton);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        if(user == null){
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
