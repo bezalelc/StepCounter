@@ -20,6 +20,9 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import org.checkerframework.common.subtyping.qual.Bottom;
 
 
@@ -30,6 +33,9 @@ public class HomeActivity extends MainActivity {
     private boolean isStepCounterSensorRunning = false;
     private TextView textViewStepsTaken;
     private Button startButton, stopButton;
+
+    FirebaseAuth auth;
+    FirebaseUser user;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
 
     @Override
@@ -50,6 +56,14 @@ public class HomeActivity extends MainActivity {
         textViewStepsTaken = findViewById(R.id.textViewStepsTaken);
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        if(user == null){
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

@@ -269,11 +269,12 @@
                 android:padding="15dp">
 
                 <RelativeLayout
+                    android:id="@+id/logout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:id="@+id/logout"
+                        android:id="@+id/ImageViewLogout"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@drawable/round_back_night_mode"
@@ -285,7 +286,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="20dp"
-                        android:layout_toEndOf="@+id/logout"
+                        android:layout_toEndOf="@+id/ImageViewLogout"
                         android:text="Logout"
                         android:textColor="#FFFFFF"
                         android:textStyle="bold" />
