@@ -127,7 +127,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
         if (requestCode == ACTIVITY_RECOGNITION_PERMISSION_CODE) {
             isStepCounterSensorExistAndPermissionGranted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-            if (!isStepCounterSensorExistAndPermissionGranted){
+            if (!isStepCounterSensorExistAndPermissionGranted) {
                 sensorProblemMakeAlert("Without physical activity permission the application will not work properly");
             }
         }
@@ -137,7 +137,8 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(msg)
                 .setCancelable(false)
-                .setPositiveButton("OK", (dialog, id) -> HomeActivity.this.finish());
+                .setPositiveButton("OK", (dialog, id) -> {
+                });
         AlertDialog alert = builder.create();
         alert.show();
     }

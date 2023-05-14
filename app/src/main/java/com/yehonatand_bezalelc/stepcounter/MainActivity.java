@@ -84,12 +84,8 @@ public abstract class MainActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("About");
             builder.setMessage(msg);
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // Code to be executed when the positive button is clicked
-                }
-
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                // Code to be executed when the positive button is clicked
             });
 
             AlertDialog alertDialog = builder.create();
