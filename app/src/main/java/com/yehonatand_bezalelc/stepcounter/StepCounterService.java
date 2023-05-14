@@ -31,7 +31,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
     private final List<StepCountObserver> observers = new ArrayList<>();
     private final IBinder binder = new StepCounterBinder();
     private BroadcastReceiver batteryReceiver;
-    private static final int BATTERY_LEVEL_THRESHOLD = 76;
+    private static final int BATTERY_LEVEL_THRESHOLD = 30;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "step_counter_channel";
     private static final String CHANNEL_NAME = "Step Counter";
@@ -62,6 +62,11 @@ public class StepCounterService extends Service implements SensorEventListener, 
     }
 
     @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         unregisterBatteryReceiver();
@@ -73,10 +78,6 @@ public class StepCounterService extends Service implements SensorEventListener, 
         stopForeground(STOP_FOREGROUND_REMOVE);
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return binder;
-    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -142,6 +143,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
                     int batteryLevel = (int) (level / (float) scale * 100);
 
                     if (batteryLevel < BATTERY_LEVEL_THRESHOLD) {
+                        stopForeground(STOP_FOREGROUND_REMOVE);
                         stopSelf();
                     }
                 }

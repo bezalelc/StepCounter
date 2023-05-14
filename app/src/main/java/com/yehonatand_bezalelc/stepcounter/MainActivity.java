@@ -3,6 +3,7 @@ package com.yehonatand_bezalelc.stepcounter;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,15 +72,18 @@ public abstract class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getTitle().equals(MenuItemType.about.toString())) {
+            String osVersion = Build.VERSION.RELEASE; // Operating system version
+            int sdkVersion = Build.VERSION.SDK_INT; // SDK version
+
+            String msg = "Step Counter\n\nBezalel Cohen 308571207\nBezalel Cohen 308571207\n" +
+                    "\nOperation System Information:\n" +
+                    "OS Version: " + osVersion + "\n" +
+                    "SDK Version: " + sdkVersion + "\n";
+
+
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("About");
-            builder.setMessage(
-                    "Step Counter\n\nBezalel Cohen 308571207\nBezalel Cohen 308571207\n" +
-                            "1.12.2023\n\n" +
-                            "System\n" +
-                            "System\n" +
-                            "System\n" +
-                            "System\n");
+            builder.setMessage(msg);
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -90,13 +94,10 @@ public abstract class MainActivity extends AppCompatActivity {
 
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
-//            Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
         } else if (menuItem.getTitle().equals(MenuItemType.setting.toString())) {
-//            Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, SettingActivity.class);
             startActivity(intent);
         } else if (menuItem.getTitle().equals(MenuItemType.exit.toString())) {
-//            Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
             onBackPressed();
         }
         return super.onOptionsItemSelected(menuItem);
@@ -104,23 +105,11 @@ public abstract class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        Toast.makeText(this, "back", Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Are you sure you want to exit?")
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // TODO exit app
-                        MainActivity.this.finish();
-//                        finishAndRemoveTask();
-//                        System.exit(0);
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                .setPositiveButton("Yes", (dialog, id) -> MainActivity.this.finish())
+                .setNegativeButton("No", (dialog, id) -> dialog.cancel());
         AlertDialog alert = builder.create();
         alert.show();
     }
