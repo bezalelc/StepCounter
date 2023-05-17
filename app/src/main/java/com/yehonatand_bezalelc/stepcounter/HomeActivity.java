@@ -1,5 +1,8 @@
 package com.yehonatand_bezalelc.stepcounter;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,6 +15,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +36,8 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     private boolean bound = false;
     private boolean isStepCounterSensorExistAndPermissionGranted = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
+    // TODO goal provided by user
+    private static final int GOAL = 4000;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -57,6 +63,9 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         return R.id.home;
     }
 
+    ProgressBar progressBar;
+//    ObjectAnimator progressBarObjectAnimator;
+
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @SuppressLint("SetTextI18n")
     @Override
@@ -77,11 +86,25 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             startActivity(intent);
             finish();
         }
+        progressBar = findViewById(R.id.progressBarGoal);
+        progressBar.setMax(GOAL);
+//        progressBarObjectAnimator = ObjectAnimator.ofInt(progressBar, "progress", 0, GOAL);
+//        progressBarObjectAnimator.s(7000);
+//        progressBarObjectAnimator.addListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                super.onAnimationEnd(animation);
+//                Toast.makeText(getBaseContext(), "comp", Toast.LENGTH_SHORT).show();
+//                progressBar.setVisibility(View.GONE);
+//            }
+//        });
+
 
         startButton.setOnClickListener(v -> {
             if (isStepCounterSensorExistAndPermissionGranted) {
                 startStepCounterService();
             }
+
         });
         stopButton.setOnClickListener(v -> {
             if (isStepCounterSensorExistAndPermissionGranted) {
@@ -89,6 +112,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             }
         });
     }
+
 
     @Override
     protected void onDestroy() {
@@ -188,6 +212,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     public void updateStepCount(int stepCount) {
         if (bound) {
             textViewStepsTaken.setText(Integer.toString(stepCount));
+            progressBar.setProgress(Math.min(stepCount, GOAL));
         } else {
             textViewStepsTaken.setText("#0");
         }
