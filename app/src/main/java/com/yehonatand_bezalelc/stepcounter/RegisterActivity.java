@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
@@ -71,9 +72,37 @@ public class RegisterActivity extends AppCompatActivity {
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.
-                            textInputLayoutPassword.setError("Authentication failed");
+                            String errorMessage = Objects.requireNonNull(task.getException()).getMessage();
+                            if (task.getException() instanceof FirebaseAuthException) {
+                                FirebaseAuthException authException = (FirebaseAuthException) task.getException();
+                                String errorCode = authException.getErrorCode();
+
+                                // Handle specific error codes
+                                switch (errorCode) {
+                                    case "ERROR_EMAIL_ALREADY_IN_USE":
+                                        textInputLayoutEmail.setError("Email already in use");
+                                        break;
+                                    case "ERROR_INVALID_EMAIL":
+                                        textInputLayoutEmail.setError("Invalid email");
+                                        break;
+                                    case "ERROR_OPERATION_NOT_ALLOWED":
+                                        textInputLayoutEmail.setError("Email/password accounts are not enabled");
+                                        break;
+                                    case "ERROR_WEAK_PASSWORD":
+                                        textInputLayoutPassword.setError("Weak password");
+                                        break;
+                                    default:
+                                        // Handle other error codes
+                                        textInputLayoutPassword.setError(errorMessage);
+                                        break;
+                                }
+                            } else {
+                                // Handle other exceptions
+                                textInputLayoutPassword.setError(errorMessage);
+                            }
                         }
                     });
+
         });
 
         TextView textViewLogin = findViewById(R.id.register_button_have_account);
