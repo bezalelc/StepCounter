@@ -1,23 +1,15 @@
 package com.yehonatand_bezalelc.stepcounter;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -28,16 +20,15 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.checkerframework.common.subtyping.qual.Bottom;
-
 public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
-    private TextView textViewStepsTaken, textViewSteps;
+    private TextView textViewSteps, textViewGoal;
+    private ImageButton buttonStartStop;
     private StepCounterService.StepCounterBinder binder;
-    private boolean bound = false;
+    private boolean bound = false, count = true;
     private boolean isStepCounterSensorExistAndPermissionGranted = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
     // TODO goal provided by user
-    private static final int GOAL = 4000;
+    private static final int GOAL = 5000;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -49,7 +40,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
      */
     @Override
     protected int getLayoutResourceId() {
-        return R.layout.activity_home;
+        return R.layout.activity_home__;
     }
 
     /**
@@ -67,17 +58,10 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 //    ObjectAnimator progressBarObjectAnimator;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    @SuppressLint("SetTextI18n")
+//    @SuppressLint("SetTextI18n")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        checkActivityRecognitionPermission();
-
-        textViewStepsTaken = findViewById(R.id.textViewStepsTaken);
-        textViewSteps = findViewById(R.id.textViewSteps);
-        Button startButton = findViewById(R.id.startButton);
-        Button stopButton = findViewById(R.id.stopButton);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -86,33 +70,35 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             startActivity(intent);
             finish();
         }
-        progressBar = findViewById(R.id.progressBarGoal);
+
+
+        checkActivityRecognitionPermission();
+
+        textViewSteps = findViewById(R.id.daily_text_view_steps);
+        textViewGoal = findViewById(R.id.daily_text_view_goal);
+        buttonStartStop = findViewById(R.id.daily_button_start_stop);
+        progressBar = findViewById(R.id.daily_progress_bar);
         progressBar.setMax(GOAL);
-//        progressBarObjectAnimator = ObjectAnimator.ofInt(progressBar, "progress", 0, GOAL);
-//        progressBarObjectAnimator.s(7000);
-//        progressBarObjectAnimator.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                super.onAnimationEnd(animation);
-//                Toast.makeText(getBaseContext(), "comp", Toast.LENGTH_SHORT).show();
-//                progressBar.setVisibility(View.GONE);
-//            }
-//        });
+
+        if (count) {
+            startStepCounterService();
+            buttonStartStop.setImageResource(android.R.drawable.ic_media_pause);
+        } else {
+            buttonStartStop.setImageResource(android.R.drawable.ic_media_play);
+        }
 
 
-        startButton.setOnClickListener(v -> {
+        buttonStartStop.setOnClickListener(view -> {
             if (isStepCounterSensorExistAndPermissionGranted) {
-                startStepCounterService();
-            }
-
-        });
-        stopButton.setOnClickListener(v -> {
-            if (isStepCounterSensorExistAndPermissionGranted) {
-                stopStepCounterService();
+                if (count) {
+                    startStepCounterService();
+                } else {
+                    stopStepCounterService();
+                }
+                count = !count;
             }
         });
     }
-
 
     @Override
     protected void onDestroy() {
@@ -167,33 +153,33 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         alert.show();
     }
 
-
     public void startStepCounterService() {
         Intent stepCounterServiceIntent = new Intent(this, StepCounterService.class);
         startService(stepCounterServiceIntent);
         bindService(stepCounterServiceIntent, this, Context.BIND_AUTO_CREATE);
+        buttonStartStop.setImageResource(android.R.drawable.ic_media_pause);
     }
-
 
     public void stopStepCounterService() {
         if (bound) {
+            Toast.makeText(this, "stopStepCounterService: if (bound)", Toast.LENGTH_LONG).show();
             unbindService(this);
             bound = false;
         }
 
         Intent serviceIntent = new Intent(this, StepCounterService.class);
         stopService(serviceIntent);
+        buttonStartStop.setImageResource(android.R.drawable.ic_media_play);
     }
-
 
     @Override
     public void onStepCountChanged(int stepCount) {
         updateStepCount(stepCount);
     }
 
-
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
+        Toast.makeText(this, "onServiceConnected", Toast.LENGTH_LONG).show();
         this.binder = (StepCounterService.StepCounterBinder) service;
         bound = true;
         binder.getService().addObserver(this);
@@ -211,10 +197,10 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     @SuppressLint("SetTextI18n")
     public void updateStepCount(int stepCount) {
         if (bound) {
-            textViewStepsTaken.setText(Integer.toString(stepCount));
+            textViewSteps.setText(Integer.toString(stepCount));
             progressBar.setProgress(Math.min(stepCount, GOAL));
         } else {
-            textViewStepsTaken.setText("#0");
+            textViewSteps.setText("#0");
         }
     }
 }

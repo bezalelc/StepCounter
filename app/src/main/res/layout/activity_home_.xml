@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            tools:context=".HomeActivity"
+            tools:ignore="ScrollViewCount"
+            android:id="@+id/daily_layout_main">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/daily_layout_up"
+                android:background="@drawable/daily_background_shape_up"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/daily_layout_main">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      tools:ignore="MissingConstraints"
+                      android:text="0"
+                      android:textSize="50sp" android:textStyle="bold" app:layout_constraintTop_toTopOf="parent"
+                      android:layout_marginTop="44dp" app:layout_constraintStart_toStartOf="parent"
+                      android:layout_marginStart="28dp" android:id="@+id/daily_text_view_steps"
+                      app:layout_constraintBottom_toTopOf="@+id/daily_text_view_goal"
+                      app:layout_constraintEnd_toStartOf="@+id/daily_button_start_stop"
+                      android:layout_marginEnd="209dp"/>
+            <ImageButton
+                    android:layout_width="55dp"
+                    android:layout_height="52dp" app:srcCompat="@android:drawable/ic_media_play"
+                    android:id="@+id/daily_button_start_stop"
+                    tools:ignore="MissingConstraints"
+                    android:background="#00FFFFFF" android:backgroundTint="#4CAF50"
+                    android:contentDescription="start/stop" app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="56dp" android:layout_marginEnd="72dp"
+                    app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="209dp"
+                    app:layout_constraintStart_toEndOf="@+id/daily_text_view_steps"
+                    android:layout_marginBottom="35dp"
+                    app:layout_constraintBottom_toTopOf="@+id/daily_progress_bar"/>
+            <TextView
+                    android:text="/5000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/daily_text_view_goal"
+                    android:textSize="24sp"
+                    app:layout_constraintTop_toBottomOf="@+id/daily_text_view_steps"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="28dp"/>
+            <ProgressBar
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="359dp"
+                    android:layout_height="21dp"
+                    android:id="@+id/daily_progress_bar"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/daily_text_view_goal"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="18dp"
+                    android:layout_marginEnd="18dp" app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/home_linear_layout_middle"
+                android:background="@drawable/daily_background_shape_up">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/home_linear_layout_down"
+                android:background="@drawable/daily_background_shape_up">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemBackground="@color/teal_700"
+            app:itemIconTint="@drawable/home_nav_bar"
+            app:itemTextColor="@drawable/home_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/daily_layout_main"
+            app:layout_constraintVertical_bias="1.0"
+            app:menu="@menu/menu_navigation"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
