@@ -6,9 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.*;
 
 import androidx.annotation.NonNull;
@@ -21,14 +24,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
-    private TextView textViewSteps, textViewGoal;
+    private TextView textViewSteps, textViewGoal, textViewProgressBar;
     private ImageButton buttonStartStop;
     private StepCounterService.StepCounterBinder binder;
-    private boolean bound = false, count = true;
+    private boolean bound = false;
+    // TODO count defined by user
+    private boolean count = false;
     private boolean isStepCounterSensorExistAndPermissionGranted = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
+    //    private static final int PROGRESS_BAR_MAX = 1000;
     // TODO goal provided by user
-    private static final int GOAL = 5000;
+    private static final int GOAL = 5000, STEPS = 4000;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -40,7 +46,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
      */
     @Override
     protected int getLayoutResourceId() {
-        return R.layout.activity_home__;
+        return R.layout.activity_home;
     }
 
     /**
@@ -55,10 +61,9 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     }
 
     ProgressBar progressBar;
-//    ObjectAnimator progressBarObjectAnimator;
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.Q)
-//    @SuppressLint("SetTextI18n")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,34 +76,45 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             finish();
         }
 
-
         checkActivityRecognitionPermission();
 
         textViewSteps = findViewById(R.id.daily_text_view_steps);
         textViewGoal = findViewById(R.id.daily_text_view_goal);
+        textViewGoal.setText("/" + GOAL);
+        textViewProgressBar = findViewById(R.id.daily_text_view_progress_bar);
         buttonStartStop = findViewById(R.id.daily_button_start_stop);
         progressBar = findViewById(R.id.daily_progress_bar);
         progressBar.setMax(GOAL);
 
-        if (count) {
+        if (count && isStepCounterSensorExistAndPermissionGranted) {
             startStepCounterService();
             buttonStartStop.setImageResource(android.R.drawable.ic_media_pause);
         } else {
             buttonStartStop.setImageResource(android.R.drawable.ic_media_play);
         }
 
+        // Add a layout change listener to the ProgressBar
+        progressBar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                updateStepCount(4000);
+                // Remove the listener to avoid redundant calls
+                progressBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
 
         buttonStartStop.setOnClickListener(view -> {
             if (isStepCounterSensorExistAndPermissionGranted) {
                 if (count) {
-                    startStepCounterService();
-                } else {
                     stopStepCounterService();
+                } else {
+                    startStepCounterService();
                 }
                 count = !count;
             }
         });
     }
+
 
     @Override
     protected void onDestroy() {
@@ -116,9 +132,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
      */
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void checkActivityRecognitionPermission() {
-        // TODO handle 1. ACTIVITY_RECOGNITION not exist , 2. PERMISSION_DENIED
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)) {
-//            Toast.makeText(HomeActivity.this, "ACTIVITY_RECOGNITION not found in device", Toast.LENGTH_SHORT).show();
             sensorProblemMakeAlert("Step Counter sensor not exist on this device and the application will not work properly");
         } else {
             if (ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
@@ -126,7 +140,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
                 ActivityCompat.requestPermissions(HomeActivity.this, new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION}, ACTIVITY_RECOGNITION_PERMISSION_CODE);
             } else {
                 isStepCounterSensorExistAndPermissionGranted = true;
-//                Toast.makeText(HomeActivity.this, "ACTIVITY_RECOGNITION Permission already granted", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -162,7 +175,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
     public void stopStepCounterService() {
         if (bound) {
-            Toast.makeText(this, "stopStepCounterService: if (bound)", Toast.LENGTH_LONG).show();
             unbindService(this);
             bound = false;
         }
@@ -179,7 +191,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
-        Toast.makeText(this, "onServiceConnected", Toast.LENGTH_LONG).show();
         this.binder = (StepCounterService.StepCounterBinder) service;
         bound = true;
         binder.getService().addObserver(this);
@@ -196,11 +207,22 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
     @SuppressLint("SetTextI18n")
     public void updateStepCount(int stepCount) {
-        if (bound) {
-            textViewSteps.setText(Integer.toString(stepCount));
-            progressBar.setProgress(Math.min(stepCount, GOAL));
+//        Toast.makeText(this, stepCount+" updateStepCount: " + Math.min((int) ((float) stepCount / GOAL), GOAL), Toast.LENGTH_SHORT).show();
+        textViewSteps.setText(Integer.toString(stepCount));
+
+        int maxProgress = progressBar.getMax();
+        float progressPercentage = (float) stepCount / maxProgress;
+        int progressBarLocation = (int) (progressPercentage * progressBar.getWidth());
+
+        textViewProgressBar.setText(((int) (100 * progressPercentage)) + "%");
+        if (progressPercentage < .7) {
+            textViewProgressBar.setPadding(progressBarLocation + 5, 0, 0, 0);
         } else {
-            textViewSteps.setText("#0");
+            String text = textViewProgressBar.getText().toString();
+            Paint paint = textViewProgressBar.getPaint();
+            int textLengthInPixels = (int) paint.measureText(text);
+            textViewProgressBar.setPadding(progressBarLocation - textLengthInPixels - 20, 0, 0, 0);
         }
+        progressBar.setProgress(Math.min(stepCount, maxProgress));
     }
 }
