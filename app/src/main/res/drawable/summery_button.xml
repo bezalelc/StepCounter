@@ -1,0 +1,26 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF"/> <!-- Set the desired background color when pressed -->
+            <corners android:radius="8dp"/> <!-- Set the desired corner radius -->
+            <padding
+                    android:left="8dp"
+                    android:top="8dp"
+                    android:right="8dp"
+                    android:bottom="8dp"/> <!-- Set the desired padding -->
+            <corners android:radius="8dp"/> <!-- Set the desired corner radius -->
+            <stroke
+                    android:width="2dp"
+                    android:color="#FF0000"/> <!-- Set the desired stroke color and width -->
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF"/> <!-- Set the default background color -->
+            <corners android:radius="8dp"/> <!-- Set the desired corner radius -->
+            <stroke
+                    android:width="2dp"
+                    android:color="#00000000"/> <!-- Set the desired stroke color and width -->
+        </shape>
+    </item>
+</selector>
