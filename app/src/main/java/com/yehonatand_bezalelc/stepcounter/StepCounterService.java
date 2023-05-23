@@ -40,6 +40,10 @@ public class StepCounterService extends Service implements SensorEventListener, 
         StepCounterService getService() {
             return StepCounterService.this;
         }
+
+        public int getStepCount() {
+            return getService().stepCount;
+        }
     }
 
     @Override

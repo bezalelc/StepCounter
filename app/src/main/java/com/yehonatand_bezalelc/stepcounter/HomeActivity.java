@@ -26,15 +26,14 @@ import com.google.firebase.auth.FirebaseUser;
 public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
     private TextView textViewSteps, textViewGoal, textViewProgressBar;
     private ImageButton buttonStartStop;
-    private StepCounterService.StepCounterBinder binder;
-    private boolean bound = false;
+    private StepCounterService.StepCounterBinder binder = null;
     // TODO count defined by user
     private boolean count = false;
     private boolean isStepCounterSensorExistAndPermissionGranted = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
     //    private static final int PROGRESS_BAR_MAX = 1000;
     // TODO goal provided by user
-    private static final int GOAL = 5000, STEPS = 4000;
+    private static final int GOAL = 30000, STEPS = 4000;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -87,17 +86,19 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         progressBar.setMax(GOAL);
 
         if (count && isStepCounterSensorExistAndPermissionGranted) {
+//            Toast.makeText(this, "onCreate 1.1: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
             startStepCounterService();
-            buttonStartStop.setImageResource(android.R.drawable.ic_media_pause);
+//            Toast.makeText(this, "onCreate 1.2: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
         } else {
-            buttonStartStop.setImageResource(android.R.drawable.ic_media_play);
+            stopStepCounterService();
+//            Toast.makeText(this, "onCreate 2: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
         }
 
         // Add a layout change listener to the ProgressBar
         progressBar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                updateStepCount(4000);
+                updateStepCount(binder != null ? binder.getStepCount() : STEPS);
                 // Remove the listener to avoid redundant calls
                 progressBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -107,19 +108,23 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             if (isStepCounterSensorExistAndPermissionGranted) {
                 if (count) {
                     stopStepCounterService();
+                    count = false;
                 } else {
                     startStepCounterService();
+                    count = true;
                 }
-                count = !count;
             }
         });
     }
 
+    private boolean isBatteryLow() {
+        return false;
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (bound) {
+        if (binder != null) {
             unbindService(this);
         }
     }
@@ -174,13 +179,13 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     }
 
     public void stopStepCounterService() {
-        if (bound) {
+        if (binder != null) {
             unbindService(this);
-            bound = false;
         }
+        binder = null;
+        count = false;
 
-        Intent serviceIntent = new Intent(this, StepCounterService.class);
-        stopService(serviceIntent);
+        stopService(new Intent(this, StepCounterService.class));
         buttonStartStop.setImageResource(android.R.drawable.ic_media_play);
     }
 
@@ -192,25 +197,25 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
         this.binder = (StepCounterService.StepCounterBinder) service;
-        bound = true;
         binder.getService().addObserver(this);
+//        Toast.makeText(this, "onServiceConnected: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        bound = false;
-
         if (binder != null) {
             binder.getService().removeObserver(this);
         }
+//        Toast.makeText(this, "onServiceDisconnected: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("SetTextI18n")
     public void updateStepCount(int stepCount) {
-//        Toast.makeText(this, stepCount+" updateStepCount: " + Math.min((int) ((float) stepCount / GOAL), GOAL), Toast.LENGTH_SHORT).show();
         textViewSteps.setText(Integer.toString(stepCount));
 
         int maxProgress = progressBar.getMax();
+        stepCount = Math.min(stepCount, maxProgress);
         float progressPercentage = (float) stepCount / maxProgress;
         int progressBarLocation = (int) (progressPercentage * progressBar.getWidth());
 
@@ -223,6 +228,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             int textLengthInPixels = (int) paint.measureText(text);
             textViewProgressBar.setPadding(progressBarLocation - textLengthInPixels - 20, 0, 0, 0);
         }
-        progressBar.setProgress(Math.min(stepCount, maxProgress));
+        progressBar.setProgress(stepCount);
     }
 }
