@@ -34,7 +34,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
     //    private static final int PROGRESS_BAR_MAX = 1000;
     // TODO goal provided by user
-    private static final int GOAL = 5000, STEPS = 4000;
+    private static final int GOAL = 30000, STEPS = 4000;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -207,10 +207,11 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
     @SuppressLint("SetTextI18n")
     public void updateStepCount(int stepCount) {
-//        Toast.makeText(this, stepCount+" updateStepCount: " + Math.min((int) ((float) stepCount / GOAL), GOAL), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, Integer.toString(stepCount), Toast.LENGTH_SHORT).show();
         textViewSteps.setText(Integer.toString(stepCount));
 
         int maxProgress = progressBar.getMax();
+        stepCount = Math.min(stepCount, maxProgress);
         float progressPercentage = (float) stepCount / maxProgress;
         int progressBarLocation = (int) (progressPercentage * progressBar.getWidth());
 
@@ -223,6 +224,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             int textLengthInPixels = (int) paint.measureText(text);
             textViewProgressBar.setPadding(progressBarLocation - textLengthInPixels - 20, 0, 0, 0);
         }
-        progressBar.setProgress(Math.min(stepCount, maxProgress));
+        progressBar.setProgress(stepCount);
     }
 }
