@@ -24,7 +24,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
     private final List<StepCountObserver> observers = new ArrayList<>();
     private final IBinder binder = new StepCounterBinder();
     private BroadcastReceiver batteryReceiver;
-    private NotificationGenerator notificationGenerator;
+    private NotificationHandler notificationHandler;
     public static final int BATTERY_LEVEL_THRESHOLD = 99;
 
     public class StepCounterBinder extends Binder {
@@ -37,7 +37,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
         }
 
         public void removeRunningNotification() {
-            getService().notificationGenerator.cancelNotification(NotificationGenerator.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
+            getService().notificationHandler.cancelNotification(NotificationHandler.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
         }
     }
 
@@ -50,9 +50,9 @@ public class StepCounterService extends Service implements SensorEventListener, 
 
         if (stepSensor != null) {
             sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
-            notificationGenerator = NotificationGenerator.getInstance(this);
+            notificationHandler = NotificationHandler.getInstance(this);
             registerBatteryReceiver();
-            notificationGenerator.showNotification(NotificationGenerator.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
+            notificationHandler.showNotification(NotificationHandler.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
         }
     }
 
@@ -75,7 +75,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
     private void stopService() {
         unregisterBatteryReceiver();
         sensorManager.unregisterListener(this, stepSensor);
-        notificationGenerator.cancelNotification(NotificationGenerator.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
+        notificationHandler.cancelNotification(NotificationHandler.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
     }
@@ -120,9 +120,9 @@ public class StepCounterService extends Service implements SensorEventListener, 
                     int batteryLevel = (int) (level / (float) scale * 100);
 
                     if (batteryLevel <= BATTERY_LEVEL_THRESHOLD) {
-                        NotificationGenerator.NOTIFICATION_TYPE notificationType =
-                                NotificationGenerator.NOTIFICATION_TYPE.NOTIFICATION_TYPE_LOW_BATTERY;
-                        notificationGenerator.showNotification(notificationType);
+                        NotificationHandler.NOTIFICATION_TYPE notificationType =
+                                NotificationHandler.NOTIFICATION_TYPE.NOTIFICATION_TYPE_LOW_BATTERY;
+                        notificationHandler.showNotification(notificationType);
                         stopService();
                     }
                 }
