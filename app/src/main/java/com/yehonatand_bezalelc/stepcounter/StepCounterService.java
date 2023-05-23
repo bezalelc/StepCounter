@@ -1,15 +1,11 @@
 package com.yehonatand_bezalelc.stepcounter;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.BatteryManager;
 import android.os.Binder;
 import android.os.IBinder;
 
@@ -23,9 +19,9 @@ public class StepCounterService extends Service implements SensorEventListener, 
     private int stepCount = 0;
     private final List<StepCountObserver> observers = new ArrayList<>();
     private final IBinder binder = new StepCounterBinder();
-    private BroadcastReceiver batteryReceiver;
+    private BatteryReceiverHandler batteryReceiverHandler = null;
     private NotificationHandler notificationHandler;
-    public static final int BATTERY_LEVEL_THRESHOLD = 99;
+    public static final int BATTERY_LEVEL_THRESHOLD = 92;
 
     public class StepCounterBinder extends Binder {
         StepCounterService getService() {
@@ -51,7 +47,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
         if (stepSensor != null) {
             sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
             notificationHandler = NotificationHandler.getInstance(this);
-            registerBatteryReceiver();
+            batteryReceiverHandler = new BatteryReceiverHandler(this, BATTERY_LEVEL_THRESHOLD);
             notificationHandler.showNotification(NotificationHandler.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
         }
     }
@@ -72,12 +68,19 @@ public class StepCounterService extends Service implements SensorEventListener, 
         stopService();
     }
 
-    private void stopService() {
-        unregisterBatteryReceiver();
+    public void stopService() {
+        if (batteryReceiverHandler != null) {
+            batteryReceiverHandler.unregister();
+            batteryReceiverHandler = null;
+        }
         sensorManager.unregisterListener(this, stepSensor);
         notificationHandler.cancelNotification(NotificationHandler.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
+    }
+
+    public NotificationHandler getNotificationHandler() {
+        return notificationHandler;
     }
 
     @Override
@@ -110,33 +113,4 @@ public class StepCounterService extends Service implements SensorEventListener, 
         }
     }
 
-    private void registerBatteryReceiver() {
-        batteryReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())) {
-                    int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                    int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                    int batteryLevel = (int) (level / (float) scale * 100);
-
-                    if (batteryLevel <= BATTERY_LEVEL_THRESHOLD) {
-                        NotificationHandler.NOTIFICATION_TYPE notificationType =
-                                NotificationHandler.NOTIFICATION_TYPE.NOTIFICATION_TYPE_LOW_BATTERY;
-                        notificationHandler.showNotification(notificationType);
-                        stopService();
-                    }
-                }
-            }
-        };
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        registerReceiver(batteryReceiver, filter);
-    }
-
-    private void unregisterBatteryReceiver() {
-        if (batteryReceiver != null) {
-            unregisterReceiver(batteryReceiver);
-            batteryReceiver = null;
-        }
-    }
 }

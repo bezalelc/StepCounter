@@ -178,9 +178,9 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     }
 
     public void startStepCounterService() {
-        if (isBatteryLow()) {
+        if (BatteryReceiverHandler.checkBatteryLevel(this, StepCounterService.BATTERY_LEVEL_THRESHOLD)) {
             createBatteryAlert();
-//            return;
+            return;
         }
         Intent stepCounterServiceIntent = new Intent(this, StepCounterService.class);
         startService(stepCounterServiceIntent);
