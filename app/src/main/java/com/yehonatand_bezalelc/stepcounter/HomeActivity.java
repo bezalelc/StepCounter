@@ -1,12 +1,10 @@
 package com.yehonatand_bezalelc.stepcounter;
 
 import android.annotation.SuppressLint;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.*;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -24,7 +22,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
-    private TextView textViewSteps, textViewGoal, textViewProgressBar;
+    private TextView textViewSteps;
+    private TextView textViewProgressBar;
     private ImageButton buttonStartStop;
     private StepCounterService.StepCounterBinder binder = null;
     // TODO count defined by user
@@ -78,7 +77,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         checkActivityRecognitionPermission();
 
         textViewSteps = findViewById(R.id.daily_text_view_steps);
-        textViewGoal = findViewById(R.id.daily_text_view_goal);
+        TextView textViewGoal = findViewById(R.id.daily_text_view_goal);
         textViewGoal.setText("/" + GOAL);
         textViewProgressBar = findViewById(R.id.daily_text_view_progress_bar);
         buttonStartStop = findViewById(R.id.daily_button_start_stop);
@@ -105,20 +104,27 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         });
 
         buttonStartStop.setOnClickListener(view -> {
+            count = !count;
             if (isStepCounterSensorExistAndPermissionGranted) {
-                if (count) {
+                if (binder != null) {
                     stopStepCounterService();
-                    count = false;
                 } else {
                     startStepCounterService();
-                    count = true;
                 }
             }
         });
     }
 
     private boolean isBatteryLow() {
-        return false;
+        Intent batteryStatus = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        if (batteryStatus != null) {
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            if (level != -1 && scale != -1) {
+                return (int) ((level / (float) scale) * 100) <= StepCounterService.BATTERY_LEVEL_THRESHOLD;
+            }
+        }
+        return true; // Return true if battery percentage cannot be determined
     }
 
     @Override
@@ -172,17 +178,31 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     }
 
     public void startStepCounterService() {
+        if (isBatteryLow()) {
+            createBatteryAlert();
+//            return;
+        }
         Intent stepCounterServiceIntent = new Intent(this, StepCounterService.class);
         startService(stepCounterServiceIntent);
         bindService(stepCounterServiceIntent, this, Context.BIND_AUTO_CREATE);
         buttonStartStop.setImageResource(android.R.drawable.ic_media_pause);
     }
 
+    public void createBatteryAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your battery is too low. Steps counting is not available.\nplease charge your phone if you want to start step counting or low your battery saver")
+                .setCancelable(false)
+                .setPositiveButton("Yes", null);
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     public void stopStepCounterService() {
         if (binder != null) {
+            binder.removeRunningNotification();
             unbindService(this);
+            binder = null;
         }
-        binder = null;
         count = false;
 
         stopService(new Intent(this, StepCounterService.class));

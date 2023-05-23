@@ -1,9 +1,5 @@
 package com.yehonatand_bezalelc.stepcounter;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,10 +11,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.BatteryManager;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
-
-import androidx.core.app.NotificationCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +24,8 @@ public class StepCounterService extends Service implements SensorEventListener, 
     private final List<StepCountObserver> observers = new ArrayList<>();
     private final IBinder binder = new StepCounterBinder();
     private BroadcastReceiver batteryReceiver;
-    private static final int BATTERY_LEVEL_THRESHOLD = 30;
-    private static final int NOTIFICATION_ID = 1;
-    private static final String CHANNEL_ID = "step_counter_channel";
-    private static final String CHANNEL_NAME = "Step Counter";
+    private NotificationGenerator notificationGenerator;
+    public static final int BATTERY_LEVEL_THRESHOLD = 99;
 
     public class StepCounterBinder extends Binder {
         StepCounterService getService() {
@@ -43,6 +34,10 @@ public class StepCounterService extends Service implements SensorEventListener, 
 
         public int getStepCount() {
             return getService().stepCount;
+        }
+
+        public void removeRunningNotification() {
+            getService().notificationGenerator.cancelNotification(NotificationGenerator.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
         }
     }
 
@@ -55,8 +50,9 @@ public class StepCounterService extends Service implements SensorEventListener, 
 
         if (stepSensor != null) {
             sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            notificationGenerator = NotificationGenerator.getInstance(this);
             registerBatteryReceiver();
-            startForeground(NOTIFICATION_ID, createNotification());
+            notificationGenerator.showNotification(NotificationGenerator.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
         }
     }
 
@@ -73,15 +69,16 @@ public class StepCounterService extends Service implements SensorEventListener, 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterBatteryReceiver();
-        sensorManager.unregisterListener(this, stepSensor);
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        if (notificationManager != null) {
-            notificationManager.cancel(NOTIFICATION_ID);
-        }
-        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopService();
     }
 
+    private void stopService() {
+        unregisterBatteryReceiver();
+        sensorManager.unregisterListener(this, stepSensor);
+        notificationGenerator.cancelNotification(NotificationGenerator.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
+        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopSelf();
+    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -94,7 +91,6 @@ public class StepCounterService extends Service implements SensorEventListener, 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
-
 
     @Override
     public void addObserver(StepCountObserver observer) {
@@ -114,29 +110,6 @@ public class StepCounterService extends Service implements SensorEventListener, 
         }
     }
 
-    private void createNotificationChannel() {
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
-        channel.setSound(null, null);
-
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        if (notificationManager != null) {
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-
-    private Notification createNotification() {
-        createNotificationChannel();
-
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle(CHANNEL_NAME).setContentText("Counting steps...").setSmallIcon(R.drawable.ic_stat_directions_run).setContentIntent(pendingIntent);
-
-        return builder.build();
-    }
-
-
     private void registerBatteryReceiver() {
         batteryReceiver = new BroadcastReceiver() {
             @Override
@@ -146,9 +119,11 @@ public class StepCounterService extends Service implements SensorEventListener, 
                     int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
                     int batteryLevel = (int) (level / (float) scale * 100);
 
-                    if (batteryLevel < BATTERY_LEVEL_THRESHOLD) {
-                        stopForeground(STOP_FOREGROUND_REMOVE);
-                        stopSelf();
+                    if (batteryLevel <= BATTERY_LEVEL_THRESHOLD) {
+                        NotificationGenerator.NOTIFICATION_TYPE notificationType =
+                                NotificationGenerator.NOTIFICATION_TYPE.NOTIFICATION_TYPE_LOW_BATTERY;
+                        notificationGenerator.showNotification(notificationType);
+                        stopService();
                     }
                 }
             }
@@ -159,6 +134,9 @@ public class StepCounterService extends Service implements SensorEventListener, 
     }
 
     private void unregisterBatteryReceiver() {
-        unregisterReceiver(batteryReceiver);
+        if (batteryReceiver != null) {
+            unregisterReceiver(batteryReceiver);
+            batteryReceiver = null;
+        }
     }
 }
