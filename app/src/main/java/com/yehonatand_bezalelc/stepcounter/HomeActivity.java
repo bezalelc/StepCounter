@@ -4,20 +4,18 @@ import android.annotation.SuppressLint;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
-import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.*;
-
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -113,18 +111,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
                 }
             }
         });
-    }
-
-    private boolean isBatteryLow() {
-        Intent batteryStatus = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        if (batteryStatus != null) {
-            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            if (level != -1 && scale != -1) {
-                return (int) ((level / (float) scale) * 100) <= StepCounterService.BATTERY_LEVEL_THRESHOLD;
-            }
-        }
-        return true; // Return true if battery percentage cannot be determined
     }
 
     @Override
