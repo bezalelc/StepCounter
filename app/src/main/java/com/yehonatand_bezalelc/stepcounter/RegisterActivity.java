@@ -18,7 +18,7 @@ import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
     private TextInputLayout textInputLayoutEmail, textInputLayoutHeight, textInputLayoutWeight, textInputLayoutPassword;
-    DBPipeline dbPipeline;
+    FirebaseAuthHelper firebaseAuthHelper;
 
     FirebaseAuth mAuth;
 
@@ -45,9 +45,9 @@ public class RegisterActivity extends AppCompatActivity {
         textInputLayoutWeight = findViewById(R.id.register_text_input_layout_weight);
         textInputLayoutPassword = findViewById(R.id.register_text_input_layout_password);
         Button buttonRegister = findViewById(R.id.register_button_register);
-        dbPipeline = new DBPipeline();
+        firebaseAuthHelper = new FirebaseAuthHelper();
         /*mAuth = FirebaseAuth.getInstance();*/
-        mAuth = dbPipeline.getmAuth();
+        mAuth = FirebaseAuth.getInstance();
 
 
         buttonRegister.setOnClickListener(v -> {

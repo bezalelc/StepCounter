@@ -2,28 +2,22 @@ package com.yehonatand_bezalelc.stepcounter;
 
 import android.util.Patterns;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
+
+import static com.yehonatand_bezalelc.stepcounter.FirebaseAuthHelper.STATUS.ERROR_INVALID_EMAIL;
 
 public class LoginActivity extends AppCompatActivity {
     private TextInputLayout textInputLayoutEmail, textInputLayoutPassword;
@@ -56,68 +50,34 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-
-        DBPipeline dbPipeline = new DBPipeline();
-
         buttonLogin.setOnClickListener(v -> {
             String email = Objects.requireNonNull(textInputLayoutEmail.getEditText()).getText().toString().trim();
             String password = Objects.requireNonNull(textInputLayoutPassword.getEditText()).getText().toString().trim();
-
-            boolean confirmEmail_ = confirmEmail(email), confirmPassword_ = confirmPassword(password);
-            if (!(confirmEmail_ && confirmPassword_)) {
-                return;
-            }
-
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            // User signed in successfully
-                            Toast.makeText(LoginActivity.this, "Sign in successful.",
-                                    Toast.LENGTH_SHORT).show();
+            FirebaseAuthHelper.STATUS status =
+                    FirebaseAuthHelper.login(email, password, new FirebaseAuthHelper.loginCallback() {
+                        @Override
+                        public void onLoginSuccess(FirebaseUser user) {
+                            Toast.makeText(LoginActivity.this, "Sign in successful.", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                             finish();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            String errorMessage = Objects.requireNonNull(task.getException()).getMessage();
-                            if (task.getException() instanceof FirebaseAuthException) {
-                                FirebaseAuthException authException = (FirebaseAuthException) task.getException();
-                                String errorCode = authException.getErrorCode();
+                        }
 
-                                // Handle specific error codes
-                                switch (errorCode) {
-                                    case "ERROR_INVALID_EMAIL":
-                                        textInputLayoutEmail.setError("Invalid email");
-                                        break;
-                                    case "ERROR_WRONG_PASSWORD":
-                                        textInputLayoutPassword.setError("Wrong password");
-                                        break;
-                                    case "ERROR_USER_NOT_FOUND":
-                                        textInputLayoutEmail.setError("User not found");
-                                        break;
-                                    case "ERROR_USER_DISABLED":
-                                        textInputLayoutEmail.setError("User account disabled");
-                                        break;
-                                    case "ERROR_TOO_MANY_REQUESTS":
-                                        Toast.makeText(LoginActivity.this, "Too many unsuccessful attempts. Please try again later.",
-                                                Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case "ERROR_OPERATION_NOT_ALLOWED":
-                                        Toast.makeText(LoginActivity.this, "Email/password authentication is not enabled.",
-                                                Toast.LENGTH_SHORT).show();
-                                        break;
-                                    default:
-                                        // Handle other error codes
-                                        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                                        break;
-                                }
+                        @Override
+                        public void onLoginFailure(Exception e) {
+                            // If sign in fails, display a message to the user.
+                            if (e instanceof FirebaseAuthException) {
+                                FirebaseAuthException authException = (FirebaseAuthException) e;
+                                String errorCode = authException.getErrorCode();
+                                FirebaseAuthHelper.STATUS errorCodeStatus = FirebaseAuthHelper.STATUS.fromString(errorCode);
+                                loginErrorHandler(errorCodeStatus, errorCode);
                             } else {
-                                // Handle other exceptions
-                                Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-
+            loginErrorHandler(status, "");
         });
+
         textViewForgotPassword.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, ForgotPaswwordActivity.class));
             finish();
@@ -128,27 +88,39 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private boolean confirmEmail(String email) {
-        if (email.equals("")) {
-            textInputLayoutEmail.setError("Field can't be empty");
-            return false;
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            textInputLayoutEmail.setError("Please enter a valid email address");
-            return false;
+    private void loginErrorHandler(FirebaseAuthHelper.STATUS status, String errorCode) {
+        String emailFieldError = "", passwordFieldError = "", toastError = "";
+        switch (status) {
+            case FIELD_OK:
+                break;
+            case SUCCESS:
+                toastError = "Login success";
+                break;
+            case EMAIL_FIELD_EMPTY:
+            case EMAIL_NOT_VALID:
+            case ERROR_INVALID_EMAIL:
+            case ERROR_USER_NOT_FOUND:
+            case ERROR_USER_DISABLED:
+                emailFieldError = status.getErrorMsg();
+                break;
+            case PASSWORD_FIELD_EMPTY:
+            case PASSWORD_LEN_LESS_THAN_6:
+            case ERROR_WRONG_PASSWORD:
+                passwordFieldError = status.getErrorMsg();
+                break;
+            case ERROR_TOO_MANY_REQUESTS:
+            case ERROR_OPERATION_NOT_ALLOWED:
+                toastError = status.getErrorMsg();
+                break;
+            default:
+                toastError = errorCode;
+                break;
         }
-        textInputLayoutEmail.setError("");
-        return true;
-    }
 
-    private boolean confirmPassword(String password) {
-        if (password.equals("")) {
-            textInputLayoutPassword.setError("Field can't be empty");
-            return false;
-        } else if (password.length() < 6) {
-            textInputLayoutPassword.setError("Please enter password at least 6 characters long");
-            return false;
+        textInputLayoutEmail.setError(emailFieldError);
+        textInputLayoutPassword.setError(passwordFieldError);
+        if (!Objects.equals(toastError, "")) {
+            Toast.makeText(LoginActivity.this, toastError, Toast.LENGTH_SHORT).show();
         }
-        textInputLayoutPassword.setError("");
-        return true;
     }
 }

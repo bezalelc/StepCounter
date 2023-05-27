@@ -83,12 +83,9 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         progressBar.setMax(GOAL);
 
         if (count && isStepCounterSensorExistAndPermissionGranted) {
-//            Toast.makeText(this, "onCreate 1.1: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
             startStepCounterService();
-//            Toast.makeText(this, "onCreate 1.2: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
         } else {
             stopStepCounterService();
-//            Toast.makeText(this, "onCreate 2: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
         }
 
         // Add a layout change listener to the ProgressBar
