@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
+    boolean b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
