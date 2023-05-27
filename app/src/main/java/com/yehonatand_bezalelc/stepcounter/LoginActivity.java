@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
             String email = Objects.requireNonNull(textInputLayoutEmail.getEditText()).getText().toString().trim();
             String password = Objects.requireNonNull(textInputLayoutPassword.getEditText()).getText().toString().trim();
             FireBaseStatus fireBaseStatus =
-                    FirebaseAuthHelper.login(email, password, new FirebaseAuthHelper.loginRegisterCallback() {
+                    FirebaseAuthHelper.login(email, password, new FirebaseAuthHelper.LoginRegisterCallback() {
                         @Override
                         public void onSuccess(FirebaseUser user) {
                             Toast.makeText(LoginActivity.this, "Sign in successful.", Toast.LENGTH_SHORT).show();

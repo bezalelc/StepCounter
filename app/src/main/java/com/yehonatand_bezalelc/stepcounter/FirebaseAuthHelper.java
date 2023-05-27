@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class FirebaseAuthHelper {
 
-    public interface loginRegisterCallback {
+    public interface LoginRegisterCallback {
         void onSuccess(FirebaseUser user);
 
         void onFailure(Exception e);
@@ -14,7 +14,7 @@ public class FirebaseAuthHelper {
 
     public static final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
-    public static FireBaseStatus login(String email, String password, final loginRegisterCallback callback) {
+    public static FireBaseStatus login(String email, String password, final LoginRegisterCallback callback) {
         FireBaseStatus confirmEmailFireBaseStatus = confirmEmail(email), confirmPasswordFireBaseStatus = confirmPassword(password);
         if (confirmEmailFireBaseStatus != FireBaseStatus.FIELD_OK) {
             return confirmEmailFireBaseStatus;
@@ -32,7 +32,7 @@ public class FirebaseAuthHelper {
         return FireBaseStatus.FIELD_OK;
     }
 
-    public static FireBaseStatus register(String email, String height, String weight, String password, final loginRegisterCallback callback) {
+    public static FireBaseStatus register(String email, String height, String weight, String password, final LoginRegisterCallback callback) {
         FireBaseStatus confirmHeightStatus = confirmHeight(height), confirmWeightStatus = confirmWeight(weight),
                 confirmEmailStatus = confirmEmail(email), confirmPasswordStatus = confirmPassword(password);
 

@@ -46,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
             String height = Objects.requireNonNull(textInputLayoutHeight.getEditText()).getText().toString().trim();
             String weight = Objects.requireNonNull(textInputLayoutWeight.getEditText()).getText().toString().trim();
             String password = Objects.requireNonNull(textInputLayoutPassword.getEditText()).getText().toString().trim();
-            FireBaseStatus fireBaseStatus = FirebaseAuthHelper.register(email, height, weight, password, new FirebaseAuthHelper.loginRegisterCallback() {
+            FireBaseStatus fireBaseStatus = FirebaseAuthHelper.register(email, height, weight, password, new FirebaseAuthHelper.LoginRegisterCallback() {
                 @Override
                 public void onSuccess(FirebaseUser user) {
                     Toast.makeText(RegisterActivity.this, "Account created.", Toast.LENGTH_SHORT).show();
