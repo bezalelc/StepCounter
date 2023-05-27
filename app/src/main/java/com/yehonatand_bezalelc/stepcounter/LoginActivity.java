@@ -1,6 +1,5 @@
 package com.yehonatand_bezalelc.stepcounter;
 
-import android.util.Patterns;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,8 +15,6 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
-
-import static com.yehonatand_bezalelc.stepcounter.FirebaseAuthHelper.STATUS.ERROR_INVALID_EMAIL;
 
 public class LoginActivity extends AppCompatActivity {
     private TextInputLayout textInputLayoutEmail, textInputLayoutPassword;
@@ -53,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin.setOnClickListener(v -> {
             String email = Objects.requireNonNull(textInputLayoutEmail.getEditText()).getText().toString().trim();
             String password = Objects.requireNonNull(textInputLayoutPassword.getEditText()).getText().toString().trim();
-            FirebaseAuthHelper.STATUS status =
+            FireBaseStatus fireBaseStatus =
                     FirebaseAuthHelper.login(email, password, new FirebaseAuthHelper.loginCallback() {
                         @Override
                         public void onLoginSuccess(FirebaseUser user) {
@@ -68,14 +65,14 @@ public class LoginActivity extends AppCompatActivity {
                             if (e instanceof FirebaseAuthException) {
                                 FirebaseAuthException authException = (FirebaseAuthException) e;
                                 String errorCode = authException.getErrorCode();
-                                FirebaseAuthHelper.STATUS errorCodeStatus = FirebaseAuthHelper.STATUS.fromString(errorCode);
-                                loginErrorHandler(errorCodeStatus, errorCode);
+                                FireBaseStatus errorCodeFireBaseStatus = FireBaseStatus.fromString(errorCode);
+                                loginErrorHandler(errorCodeFireBaseStatus, errorCode);
                             } else {
                                 Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-            loginErrorHandler(status, "");
+            loginErrorHandler(fireBaseStatus, "");
         });
 
         textViewForgotPassword.setOnClickListener(v -> {
@@ -88,9 +85,9 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loginErrorHandler(FirebaseAuthHelper.STATUS status, String errorCode) {
+    private void loginErrorHandler(FireBaseStatus fireBaseStatus, String errorCode) {
         String emailFieldError = "", passwordFieldError = "", toastError = "";
-        switch (status) {
+        switch (fireBaseStatus) {
             case FIELD_OK:
                 break;
             case SUCCESS:
@@ -101,16 +98,16 @@ public class LoginActivity extends AppCompatActivity {
             case ERROR_INVALID_EMAIL:
             case ERROR_USER_NOT_FOUND:
             case ERROR_USER_DISABLED:
-                emailFieldError = status.getErrorMsg();
+                emailFieldError = fireBaseStatus.getErrorMsg();
                 break;
             case PASSWORD_FIELD_EMPTY:
             case PASSWORD_LEN_LESS_THAN_6:
             case ERROR_WRONG_PASSWORD:
-                passwordFieldError = status.getErrorMsg();
+                passwordFieldError = fireBaseStatus.getErrorMsg();
                 break;
             case ERROR_TOO_MANY_REQUESTS:
             case ERROR_OPERATION_NOT_ALLOWED:
-                toastError = status.getErrorMsg();
+                toastError = fireBaseStatus.getErrorMsg();
                 break;
             default:
                 toastError = errorCode;
