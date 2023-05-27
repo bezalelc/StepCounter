@@ -46,6 +46,6 @@ public enum FireBaseStatus {
                 return value;
             }
         }
-        throw new IllegalArgumentException("Invalid string: " + string);
+        return ERROR_ELSE;
     }
 }

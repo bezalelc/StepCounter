@@ -6,15 +6,15 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class FirebaseAuthHelper {
 
-    public interface loginCallback {
-        void onLoginSuccess(FirebaseUser user);
+    public interface loginRegisterCallback {
+        void onSuccess(FirebaseUser user);
 
-        void onLoginFailure(Exception e);
+        void onFailure(Exception e);
     }
 
     public static final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
-    public static FireBaseStatus login(String email, String password, final loginCallback callback) {
+    public static FireBaseStatus login(String email, String password, final loginRegisterCallback callback) {
         FireBaseStatus confirmEmailFireBaseStatus = confirmEmail(email), confirmPasswordFireBaseStatus = confirmPassword(password);
         if (confirmEmailFireBaseStatus != FireBaseStatus.FIELD_OK) {
             return confirmEmailFireBaseStatus;
@@ -25,9 +25,33 @@ public class FirebaseAuthHelper {
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
                     FirebaseUser user = authResult.getUser();
-                    callback.onLoginSuccess(user);
+                    callback.onSuccess(user);
                 })
-                .addOnFailureListener(callback::onLoginFailure);
+                .addOnFailureListener(callback::onFailure);
+
+        return FireBaseStatus.FIELD_OK;
+    }
+
+    public static FireBaseStatus register(String email, String height, String weight, String password, final loginRegisterCallback callback) {
+        FireBaseStatus confirmHeightStatus = confirmHeight(height), confirmWeightStatus = confirmWeight(weight),
+                confirmEmailStatus = confirmEmail(email), confirmPasswordStatus = confirmPassword(password);
+
+        if (confirmEmailStatus != FireBaseStatus.FIELD_OK) {
+            return confirmEmailStatus;
+        } else if (confirmHeightStatus != FireBaseStatus.FIELD_OK) {
+            return confirmHeightStatus;
+        } else if (confirmWeightStatus != FireBaseStatus.FIELD_OK) {
+            return confirmWeightStatus;
+        } else if (confirmPasswordStatus != FireBaseStatus.FIELD_OK) {
+            return confirmPasswordStatus;
+        }
+
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener(authResult -> {
+                    FirebaseUser user = authResult.getUser();
+                    callback.onSuccess(user);
+                })
+                .addOnFailureListener(callback::onFailure);
 
         return FireBaseStatus.FIELD_OK;
     }

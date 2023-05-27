@@ -51,16 +51,16 @@ public class LoginActivity extends AppCompatActivity {
             String email = Objects.requireNonNull(textInputLayoutEmail.getEditText()).getText().toString().trim();
             String password = Objects.requireNonNull(textInputLayoutPassword.getEditText()).getText().toString().trim();
             FireBaseStatus fireBaseStatus =
-                    FirebaseAuthHelper.login(email, password, new FirebaseAuthHelper.loginCallback() {
+                    FirebaseAuthHelper.login(email, password, new FirebaseAuthHelper.loginRegisterCallback() {
                         @Override
-                        public void onLoginSuccess(FirebaseUser user) {
+                        public void onSuccess(FirebaseUser user) {
                             Toast.makeText(LoginActivity.this, "Sign in successful.", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                             finish();
                         }
 
                         @Override
-                        public void onLoginFailure(Exception e) {
+                        public void onFailure(Exception e) {
                             // If sign in fails, display a message to the user.
                             if (e instanceof FirebaseAuthException) {
                                 FirebaseAuthException authException = (FirebaseAuthException) e;
@@ -109,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
             case ERROR_OPERATION_NOT_ALLOWED:
                 toastError = fireBaseStatus.getErrorMsg();
                 break;
+            case ERROR_ELSE:
             default:
                 toastError = errorCode;
                 break;
