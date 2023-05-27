@@ -5,7 +5,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class ForgotPaswwordActivity extends AppCompatActivity {
+public class ForgotPasswordActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,7 +14,7 @@ public class ForgotPaswwordActivity extends AppCompatActivity {
 
         Button buttonSubmit = findViewById(R.id.forgot_password_button_submit);
         buttonSubmit.setOnClickListener(view -> {
-            startActivity(new Intent(ForgotPaswwordActivity.this, LoginActivity.class));
+            startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
             finish();
         });
     }
