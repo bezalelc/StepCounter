@@ -96,4 +96,7 @@ public class FirebaseAuthHelper {
         return FireBaseStatus.FIELD_OK;
     }
 
+    public static boolean isUserConnected() {
+        return firebaseAuth.getCurrentUser() != null;
+    }
 }

@@ -5,15 +5,16 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 
 public class NotificationHandler {
     public enum NOTIFICATION_TYPE {
-        NOTIFICATION_TYPE_LOW_BATTERY(0,
+        NOTIFICATION_TYPE_LOW_BATTERY(1,
                 "Low Battery",
                 "Your battery level is low. Please charge your device.",
                 R.drawable.ic_launcher_foreground,
                 false, false),
-        NOTIFICATION_TYPE_SERVICE_RUNNING(1,
+        NOTIFICATION_TYPE_SERVICE_RUNNING(2,
                 "Step Counter",
                 "Counting your steps",
                 R.drawable.ic_stat_directions_run,
@@ -65,19 +66,19 @@ public class NotificationHandler {
     private final StepCounterService stepCounterService;
     private final NotificationManager notificationManager;
 
-    private NotificationHandler(StepCounterService context) {
+    public NotificationHandler(StepCounterService context) {
         this.stepCounterService = context;
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         createNotificationChannel();
     }
 
-    public static synchronized NotificationHandler getInstance(StepCounterService context) {
-        if (instance == null) {
-            instance = new NotificationHandler(context);
-        }
-        return instance;
-    }
+//    public static synchronized NotificationHandler getInstance(StepCounterService context) {
+//        if (instance == null) {
+//            instance = new NotificationHandler(context);
+//        }
+//        return instance;
+//    }
 
     public Notification generateNotification(NOTIFICATION_TYPE notificationType) {
         Notification.Builder builder = new Notification.Builder(stepCounterService, CHANNEL_ID)
@@ -92,8 +93,8 @@ public class NotificationHandler {
 
     public void showNotification(NOTIFICATION_TYPE notificationType) {
         Notification notification = generateNotification(notificationType);
-        if (notificationType.foreground) {
-           stepCounterService.startForeground(notificationType.getId(), notification);
+        if (notificationType.isForeground()) {
+            stepCounterService.startForeground(notificationType.getId(), notification);
         } else {
             notificationManager.notify(notificationType.getId(), notification);
         }

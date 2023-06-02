@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,20 +17,15 @@ public class StepCounterService extends Service implements SensorEventListener, 
 
     private SensorManager sensorManager;
     private Sensor stepSensor;
-    private int stepCount = 0;
+    private final static UserData userData = UserData.getInstance();
     private final List<StepCountObserver> observers = new ArrayList<>();
     private final IBinder binder = new StepCounterBinder();
     private BatteryReceiverHandler batteryReceiverHandler = null;
     private NotificationHandler notificationHandler;
-    public static final int BATTERY_LEVEL_THRESHOLD = 92;
 
     public class StepCounterBinder extends Binder {
         StepCounterService getService() {
             return StepCounterService.this;
-        }
-
-        public int getStepCount() {
-            return getService().stepCount;
         }
 
         public void removeRunningNotification() {
@@ -46,8 +42,8 @@ public class StepCounterService extends Service implements SensorEventListener, 
 
         if (stepSensor != null) {
             sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
-            notificationHandler = NotificationHandler.getInstance(this);
-            batteryReceiverHandler = new BatteryReceiverHandler(this, BATTERY_LEVEL_THRESHOLD);
+            notificationHandler = new NotificationHandler(this);
+            batteryReceiverHandler = new BatteryReceiverHandler(this, userData.getSaveBatteryThreshold());
             notificationHandler.showNotification(NotificationHandler.NOTIFICATION_TYPE.NOTIFICATION_TYPE_SERVICE_RUNNING);
         }
     }
@@ -86,8 +82,8 @@ public class StepCounterService extends Service implements SensorEventListener, 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            stepCount = (int) event.values[0];
-            notifyStepCountChanged(stepCount);
+            userData.updateSteps((int) event.values[0]);
+            notifyStepCountChanged();
         }
     }
 
@@ -98,7 +94,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
     @Override
     public void addObserver(StepCountObserver observer) {
         observers.add(observer);
-        notifyStepCountChanged(stepCount);
+        notifyStepCountChanged();
     }
 
     @Override
@@ -107,10 +103,9 @@ public class StepCounterService extends Service implements SensorEventListener, 
     }
 
     @Override
-    public void notifyStepCountChanged(int stepCount) {
+    public void notifyStepCountChanged() {
         for (StepCountObserver observer : observers) {
-            observer.onStepCountChanged(stepCount);
+            observer.onStepCountChanged();
         }
     }
-
 }

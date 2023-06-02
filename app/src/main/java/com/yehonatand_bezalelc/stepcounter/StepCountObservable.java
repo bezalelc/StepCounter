@@ -5,5 +5,5 @@ public interface StepCountObservable {
 
     void removeObserver(StepCountObserver observer);
 
-    void notifyStepCountChanged(int stepCount);
+    void notifyStepCountChanged();
 }
