@@ -6,6 +6,8 @@ import java.util.HashMap;
 public class UserData {
     private static UserData instance;
 
+    public static final int MAX_HEIGHT = 230, MIN_HEIGHT = 40, MAX_WEIGHT = 300, MIN_WEIGHT = 30;
+
     private String email, password;
     private boolean count = false, notification = true;
     private int goal = 5000;

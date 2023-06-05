@@ -77,9 +77,9 @@ public class FirebaseAuthHelper {
     private static FireBaseStatus confirmHeight(String height) {
         if (height.equals("")) {
             return FireBaseStatus.HEIGHT_FIELD_EMPTY;
-        } else if (Integer.parseInt(height) < 40) {
+        } else if (Integer.parseInt(height) < UserData.MIN_HEIGHT) {
             return FireBaseStatus.HEIGHT_TO_LOW;
-        } else if (Integer.parseInt(height) > 230) {
+        } else if (Integer.parseInt(height) > UserData.MAX_HEIGHT) {
             return FireBaseStatus.HEIGHT_TO_HIGH;
         }
         return FireBaseStatus.FIELD_OK;
@@ -88,9 +88,9 @@ public class FirebaseAuthHelper {
     private static FireBaseStatus confirmWeight(String weight) {
         if (weight.equals("")) {
             return FireBaseStatus.WEIGHT_FIELD_EMPTY;
-        } else if (Integer.parseInt(weight) < 30) {
+        } else if (Integer.parseInt(weight) < UserData.MIN_WEIGHT) {
             return FireBaseStatus.WEIGHT_TO_LOW;
-        } else if (Integer.parseInt(weight) > 300) {
+        } else if (Integer.parseInt(weight) > UserData.MAX_WEIGHT) {
             return FireBaseStatus.WEIGHT_TO_HIGH;
         }
         return FireBaseStatus.FIELD_OK;
