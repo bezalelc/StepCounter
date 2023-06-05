@@ -35,16 +35,17 @@ public class UserData {
     }
 
     public Integer[] getSummerySorted() {
-        Integer[] summerySortedReversed = new Integer[8];
-        summerySortedReversed[0] = 5000;
-        summerySortedReversed[1] = 5000;
-        summerySortedReversed[2] = 5000;
-        summerySortedReversed[3] = 5000;
-        summerySortedReversed[4] = 7000;
-        summerySortedReversed[5] = 5000;
-        summerySortedReversed[6] = 5000;
-        summerySortedReversed[7] = 200;
-        return summerySortedReversed;
+        Integer[] summerySorted = new Integer[8];
+        // todo yona
+        summerySorted[0] = 5000;
+        summerySorted[1] = 5000;
+        summerySorted[2] = 5000;
+        summerySorted[3] = 5000;
+        summerySorted[4] = 7000;
+        summerySorted[5] = 5000;
+        summerySorted[6] = 200;//today
+//        summerySorted[7] = 200;//today
+        return summerySorted;
     }
 
     public static synchronized UserData getInstance() {

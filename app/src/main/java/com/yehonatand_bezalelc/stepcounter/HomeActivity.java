@@ -124,34 +124,40 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         icons[4] = findViewById(R.id.daily_image_view_summery_icon5);
         icons[5] = findViewById(R.id.daily_image_view_summery_icon6);
         icons[6] = findViewById(R.id.daily_image_view_summery_icon7);
+        Integer[] summerySorted = userData.getSummerySorted();
+        int i = 0;
         for (ImageView icon : icons) {
-            icon.setImageResource(R.drawable.back_btn);
+            if (summerySorted[i] >= userData.getGoal()) {
+                icon.setImageResource(R.drawable.baseline_logout_24);
+            } else {
+                icon.setImageResource(R.drawable.back_btn);
+            }
         }
 
-        LinkedList<Map.Entry<String, Integer>> entries = new LinkedList<>(userData.getHistory().entrySet());
-        // Get a ListIterator starting from the end of the list
-        ListIterator<Map.Entry<String, Integer>> iterator = entries.listIterator(entries.size());
-        // Ignore the last entry
-        if (iterator.hasPrevious()) {
-            iterator.previous();
-        }
-        int i = 6;
-        // Iterate over the entries in reverse order
-        while (iterator.hasPrevious()) {
-            if (i < 0) {
-                break;
-            }
-            Map.Entry<String, Integer> entry = iterator.previous();
-
-            String key = entry.getKey();
-            Integer value = entry.getValue();
-            Log.d("iterator: ", i + ": " + value + ", bool=" + (value >= userData.getGoal()));
-            if (value >= userData.getGoal()) {
-                icons[i].setImageResource(R.drawable.baseline_logout_24);
-//                Toast.makeText(this, key + " " + i + " " + icons[i].getId(), Toast.LENGTH_SHORT).show();
-            }
-            i--;
-        }
+//        LinkedList<Map.Entry<String, Integer>> entries = new LinkedList<>(userData.getHistory().entrySet());
+//        // Get a ListIterator starting from the end of the list
+//        ListIterator<Map.Entry<String, Integer>> iterator = entries.listIterator(entries.size());
+//        // Ignore the last entry
+//        if (iterator.hasPrevious()) {
+//            iterator.previous();
+//        }
+//        int i = 6;
+//        // Iterate over the entries in reverse order
+//        while (iterator.hasPrevious()) {
+//            if (i < 0) {
+//                break;
+//            }
+//            Map.Entry<String, Integer> entry = iterator.previous();
+//
+//            String key = entry.getKey();
+//            Integer value = entry.getValue();
+//            Log.d("iterator: ", i + ": " + value + ", bool=" + (value >= userData.getGoal()));
+//            if (value >= userData.getGoal()) {
+//                icons[i].setImageResource(R.drawable.baseline_logout_24);
+////                Toast.makeText(this, key + " " + i + " " + icons[i].getId(), Toast.LENGTH_SHORT).show();
+//            }
+//            i--;
+//        }
 
 
 //        int i = 0;
