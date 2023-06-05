@@ -28,6 +28,20 @@ public class UserData {
         history.put("05-17", 6000);
         history.put("05-18", 11000);
         history.put("05-19", 400);
+        history.put("05-20", 400);
+    }
+
+    public Integer[] getSummerySorted() {
+        Integer[] summerySortedReversed = new Integer[8];
+        summerySortedReversed[0] = 5000;
+        summerySortedReversed[1] = 5000;
+        summerySortedReversed[2] = 5000;
+        summerySortedReversed[3] = 5000;
+        summerySortedReversed[4] = 7000;
+        summerySortedReversed[5] = 5000;
+        summerySortedReversed[6] = 5000;
+        summerySortedReversed[7] = 200;
+        return summerySortedReversed;
     }
 
     public static synchronized UserData getInstance() {
@@ -179,6 +193,19 @@ public class UserData {
     public int stepsToDistance(int steps) {
         // Convert steps to distance in kilometers based on height and stride length
         return (int) ((steps * this.height * 0.414) / 1000.0);
+    }
+
+    public int getLastWeakAverage() {
+        if (history.isEmpty()) {
+            return 0; // Return 0 if the HashMap is empty to avoid division by zero
+        }
+
+        int sum = 0;
+        for (int value : history.values()) {
+            sum += value;
+        }
+
+        return sum / history.size();
     }
 
 //    private double stepsToTime(int steps) {

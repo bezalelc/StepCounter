@@ -205,18 +205,18 @@
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:ignore="MissingConstraints" android:text="Last week daily average: "
-                android:id="@+id/daily_text_view1" app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/daily_text_view_average_num" app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/daily_text_view_average"
                 android:layout_marginBottom="24dp" app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         />
         <TextView
-                android:text="6789.9"
+                android:text="6789"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/daily_text_view_average"
                 android:textSize="24sp" android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginEnd="16dp" app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/daily_text_view1"
+                app:layout_constraintStart_toEndOf="@+id/daily_text_view_average_num"
                 android:layout_marginBottom="24dp" app:layout_constraintBottom_toTopOf="@+id/linearLayout"
                 android:layout_marginTop="8dp"/>
 
@@ -228,7 +228,8 @@
                       app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center">
                 <ImageView

@@ -7,19 +7,20 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.ViewTreeObserver;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.util.*;
+
 public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
     private TextView textViewSteps;
-    private TextView textViewProgressBar, textViewDistance, textViewCalories;
+    private TextView textViewProgressBar;
     private ImageButton buttonStartStop;
     private ProgressBar progressBar;
     private StepCounterService.StepCounterBinder binder = null;
@@ -66,10 +67,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
         checkActivityRecognitionPermission();
 
-        textViewDistance = findViewById(R.id.daily_text_view_km_num);
-        textViewCalories = findViewById(R.id.daily_text_view_calories_num);
-        textViewDistance.setText(Integer.toString(userData.stepsToDistance(userData.getStepsCounter())));
-        textViewCalories.setText(Integer.toString(userData.calculateCaloriesBurned(userData.getStepsCounter())));
+        setStatisticViews();
 
         textViewSteps = findViewById(R.id.daily_text_view_steps);
         TextView textViewGoal = findViewById(R.id.daily_text_view_goal);
@@ -107,6 +105,88 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             }
         });
 
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setStatisticViews() {
+        TextView textViewDistance = findViewById(R.id.daily_text_view_km_num);
+        textViewDistance.setText(Double.toString((double) userData.stepsToDistance(userData.getStepsCounter()) / 100.0));
+        TextView textViewCalories = findViewById(R.id.daily_text_view_calories_num);
+        textViewCalories.setText(Integer.toString(userData.calculateCaloriesBurned(userData.getStepsCounter())));
+        TextView textViewAverage = findViewById(R.id.daily_text_view_average);
+        textViewAverage.setText(Integer.toString(userData.getLastWeakAverage()));
+
+        ImageView[] icons = new ImageView[7];
+        icons[0] = findViewById(R.id.daily_image_view_summery_icon1);
+        icons[1] = findViewById(R.id.daily_image_view_summery_icon2);
+        icons[2] = findViewById(R.id.daily_image_view_summery_icon3);
+        icons[3] = findViewById(R.id.daily_image_view_summery_icon4);
+        icons[4] = findViewById(R.id.daily_image_view_summery_icon5);
+        icons[5] = findViewById(R.id.daily_image_view_summery_icon6);
+        icons[6] = findViewById(R.id.daily_image_view_summery_icon7);
+        for (ImageView icon : icons) {
+            icon.setImageResource(R.drawable.back_btn);
+        }
+
+        LinkedList<Map.Entry<String, Integer>> entries = new LinkedList<>(userData.getHistory().entrySet());
+        // Get a ListIterator starting from the end of the list
+        ListIterator<Map.Entry<String, Integer>> iterator = entries.listIterator(entries.size());
+        // Ignore the last entry
+        if (iterator.hasPrevious()) {
+            iterator.previous();
+        }
+        int i = 6;
+        // Iterate over the entries in reverse order
+        while (iterator.hasPrevious()) {
+            if (i < 0) {
+                break;
+            }
+            Map.Entry<String, Integer> entry = iterator.previous();
+
+            String key = entry.getKey();
+            Integer value = entry.getValue();
+            Log.d("iterator: ", i + ": " + value + ", bool=" + (value >= userData.getGoal()));
+            if (value >= userData.getGoal()) {
+                icons[i].setImageResource(R.drawable.baseline_logout_24);
+//                Toast.makeText(this, key + " " + i + " " + icons[i].getId(), Toast.LENGTH_SHORT).show();
+            }
+            i--;
+        }
+
+
+//        int i = 0;
+//        for (HashMap.Entry<String, Integer> entry : userData.getHistory().entrySet()) {
+//            if (i >= icons.length) {
+//                break;
+//            }
+//            String key = entry.getKey();
+//            Integer value = entry.getValue();
+//
+//            if (value > userData.getGoal()) {
+//                icons[i].setImageResource(R.drawable.back_btn);
+//            }
+//            i++;
+//        }
+
+
+        TextView[] textViewSummery = new TextView[7];
+        textViewSummery[0] = findViewById(R.id.daily_text_view_summery1);
+        textViewSummery[1] = findViewById(R.id.daily_text_view_summery2);
+        textViewSummery[2] = findViewById(R.id.daily_text_view_summery3);
+        textViewSummery[3] = findViewById(R.id.daily_text_view_summery4);
+        textViewSummery[4] = findViewById(R.id.daily_text_view_summery5);
+        textViewSummery[5] = findViewById(R.id.daily_text_view_summery6);
+        textViewSummery[6] = findViewById(R.id.daily_text_view_summery7);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+//        String[] dayNames = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        String[] dayNames = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+        for (int j = 6; j >= 0; j--) {
+            calendar.add(Calendar.DAY_OF_YEAR, -1);
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            String dayName = dayNames[dayOfWeek - 1];
+            textViewSummery[j].setText(dayName);
+        }
     }
 
     @Override

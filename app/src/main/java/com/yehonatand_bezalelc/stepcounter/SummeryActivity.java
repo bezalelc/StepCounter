@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -24,6 +25,7 @@ public class SummeryActivity extends MainActivity {
     private final UserData userData = UserData.getInstance();
     private List<Integer> dataPoints = new ArrayList<>();
     private int limit;
+    private final int MAX_DAYS = 7;
 
     @Override
     protected int getLayoutResourceId() {
@@ -99,26 +101,26 @@ public class SummeryActivity extends MainActivity {
 
     private void setSteps() {
         dataPoints.clear();
-        for (String date : userData.getHistory().keySet()) {
-            dataPoints.add(userData.getHistory().get(date));
-        }
+        Integer[] summerySorted = userData.getSummerySorted();
+        dataPoints.addAll(Arrays.asList(summerySorted).subList(0, MAX_DAYS));
         limit = userData.getGoal();
     }
 
     private void setCalories() {
         dataPoints.clear();
-        for (String date : userData.getHistory().keySet()) {
-            dataPoints.add(userData.calculateCaloriesBurned(userData.getHistory().get(date)));
+        Integer[] summerySorted = userData.getSummerySorted();
+        for (int i = 0; i < MAX_DAYS; i++) {
+            dataPoints.add(userData.calculateCaloriesBurned(summerySorted[i]));
         }
         limit = userData.calculateCaloriesBurned(userData.getGoal());
     }
 
     private void setDistance() {
         dataPoints.clear();
-        for (String date : userData.getHistory().keySet()) {
-            dataPoints.add(userData.stepsToDistance(userData.getHistory().get(date)));
+        Integer[] summerySorted = userData.getSummerySorted();
+        for (int i = 0; i < MAX_DAYS; i++) {
+            dataPoints.add(userData.stepsToDistance(summerySorted[i]));
         }
         limit = userData.stepsToDistance(userData.getGoal());
-
     }
 }
