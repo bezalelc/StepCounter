@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -17,9 +18,12 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 public class SummeryActivity extends MainActivity {
-    BarChart chart;
-    Button buttonSteps, buttonDistance, buttonTime, buttonCalories;
-    LinearLayout linearLayoutChart;
+    private BarChart chart;
+    private Button buttonSteps, buttonDistance, buttonTime, buttonCalories;
+    private LinearLayout linearLayoutChart;
+    private final UserData userData = UserData.getInstance();
+    private List<Integer> dataPoints = new ArrayList<>();
+    private int limit;
 
     @Override
     protected int getLayoutResourceId() {
@@ -41,41 +45,29 @@ public class SummeryActivity extends MainActivity {
         buttonDistance = findViewById(R.id.summery_button_distance);
         buttonTime = findViewById(R.id.summery_button_time);
         buttonCalories = findViewById(R.id.summery_button_calories);
+        setSteps();
         updateChart();
         buttonSteps.setOnClickListener(view -> {
+            setSteps();
             updateChart();
         });
         buttonDistance.setOnClickListener(view -> {
+            setDistance();
             updateChart();
         });
-        buttonTime.setOnClickListener(view -> {
-            updateChart();
-        });
+//        buttonTime.setOnClickListener(view -> {
+//            updateChart();
+//        });
         buttonCalories.setOnClickListener(view -> {
+            setCalories();
             updateChart();
         });
     }
 
     private void updateChart() {
-        List<Float> dataPoints = new ArrayList<>();
-        dataPoints.add(10f);
-        dataPoints.add(15f);
-        dataPoints.add(7f);
-        dataPoints.add(12f);
-        dataPoints.add(9f);
-        dataPoints.add(6f);
-        dataPoints.add(11f);
-
-        List<String> labels = new ArrayList<>();
-        labels.add("05-13");
-        labels.add("05-14");
-        labels.add("05-15");
-        labels.add("05-16");
-        labels.add("05-17");
-        labels.add("05-18");
-        labels.add("05-19");
-
         List<BarEntry> entries = new ArrayList<>();
+        List<String> labels = new ArrayList<>(userData.getHistory().keySet());
+
         for (int i = 0; i < dataPoints.size(); i++) {
             entries.add(new BarEntry(i, dataPoints.get(i)));
         }
@@ -90,10 +82,43 @@ public class SummeryActivity extends MainActivity {
         xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         YAxis yAxis = chart.getAxisLeft(); // Get the Y-axis
+        yAxis.removeAllLimitLines();
         yAxis.setTextColor(Color.BLUE); // Set the desired color for the Y-axis labels
         chart.getAxisLeft().setAxisLineColor(Color.GREEN);
 
+        LimitLine limitLine = new LimitLine(limit, "Goal");
+        limitLine.setLineColor(Color.BLUE); // Set the color of the line
+        limitLine.setLineWidth(2f); // Set the width of the line
+        limitLine.enableDashedLine(10f, 5f, 0f); // Enable a dashed line pattern
+//        limitLine.setLabel("Goal");
+        yAxis.addLimitLine(limitLine);
+
         chart.invalidate();
-//        linearLayoutChart.setLay
+    }
+
+
+    private void setSteps() {
+        dataPoints.clear();
+        for (String date : userData.getHistory().keySet()) {
+            dataPoints.add(userData.getHistory().get(date));
+        }
+        limit = userData.getGoal();
+    }
+
+    private void setCalories() {
+        dataPoints.clear();
+        for (String date : userData.getHistory().keySet()) {
+            dataPoints.add(userData.calculateCaloriesBurned(userData.getHistory().get(date)));
+        }
+        limit = userData.calculateCaloriesBurned(userData.getGoal());
+    }
+
+    private void setDistance() {
+        dataPoints.clear();
+        for (String date : userData.getHistory().keySet()) {
+            dataPoints.add(userData.stepsToDistance(userData.getHistory().get(date)));
+        }
+        limit = userData.stepsToDistance(userData.getGoal());
+
     }
 }

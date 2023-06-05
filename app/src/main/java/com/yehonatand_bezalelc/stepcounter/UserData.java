@@ -21,6 +21,13 @@ public class UserData {
     private HashMap<String, Integer> history = new HashMap<>();
 
     private UserData() {
+        history.put("05-13", 5500);
+        history.put("05-14", 4000);
+        history.put("05-15", 1500);
+        history.put("05-16", 4567);
+        history.put("05-17", 6000);
+        history.put("05-18", 11000);
+        history.put("05-19", 400);
     }
 
     public static synchronized UserData getInstance() {
@@ -160,6 +167,26 @@ public class UserData {
         setStepsCounter(stepsRegisterValue - this.stepsCounterLast);
         setStepsCounterLast(stepsRegisterValue);
     }
+
+    public int calculateCaloriesBurned(int steps) {
+        double timeInMinutes = steps * 0.067;
+
+        // MET value for walking (3.5 calories per kilogram per minute)
+        // Calculate the calories burned using the MET formula: calories = MET * weight * time
+        return (int) (3.5 * timeInMinutes * this.weight / 200);
+    }
+
+    public int stepsToDistance(int steps) {
+        // Convert steps to distance in kilometers based on height and stride length
+        return (int) ((steps * this.height * 0.414) / 1000.0);
+    }
+
+//    private double stepsToTime(int steps) {
+//        // Convert steps to time in minutes
+//        // This is a rough estimate and can vary depending on individuals
+//        return steps * 0.067;
+//    }
+
 }
 
 

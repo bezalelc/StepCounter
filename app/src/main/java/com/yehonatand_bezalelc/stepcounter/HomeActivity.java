@@ -16,22 +16,18 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import android.util.Log;
 
 public class HomeActivity extends MainActivity implements ServiceConnection, StepCountObserver {
     private TextView textViewSteps;
-    private TextView textViewProgressBar;
+    private TextView textViewProgressBar, textViewDistance, textViewCalories;
     private ImageButton buttonStartStop;
     private ProgressBar progressBar;
     private StepCounterService.StepCounterBinder binder = null;
-    // TODO count defined by user
     private boolean isStepCounterSensorExistAndPermissionGranted = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
     //    private static final int PROGRESS_BAR_MAX = 1000;
     // TODO goal provided by user
-    private final static UserData useData = UserData.getInstance();
+    private final static UserData userData = UserData.getInstance();
 
     /**
      * this function is for the MainActivity class, the MainActivity will start the correct UI
@@ -70,15 +66,20 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
         checkActivityRecognitionPermission();
 
+        textViewDistance = findViewById(R.id.daily_text_view_km_num);
+        textViewCalories = findViewById(R.id.daily_text_view_calories_num);
+        textViewDistance.setText(Integer.toString(userData.stepsToDistance(userData.getStepsCounter())));
+        textViewCalories.setText(Integer.toString(userData.calculateCaloriesBurned(userData.getStepsCounter())));
+
         textViewSteps = findViewById(R.id.daily_text_view_steps);
         TextView textViewGoal = findViewById(R.id.daily_text_view_goal);
-        textViewGoal.setText("/" + useData.getGoal());
+        textViewGoal.setText("/" + userData.getGoal());
         textViewProgressBar = findViewById(R.id.daily_text_view_progress_bar);
         buttonStartStop = findViewById(R.id.daily_button_start_stop);
         progressBar = findViewById(R.id.daily_progress_bar);
-        progressBar.setMax(useData.getGoal());
+        progressBar.setMax(userData.getGoal());
 
-        if (useData.isCount() && isStepCounterSensorExistAndPermissionGranted) {
+        if (userData.isCount() && isStepCounterSensorExistAndPermissionGranted) {
             startStepCounterService();
         } else {
             stopStepCounterService();
@@ -96,7 +97,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
         buttonStartStop.setOnClickListener(view -> {
             if (isStepCounterSensorExistAndPermissionGranted) {
-                useData.setCount(!useData.isCount());
+                userData.setCount(!userData.isCount());
 
                 if (binder != null) {
                     stopStepCounterService();
@@ -105,6 +106,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
                 }
             }
         });
+
     }
 
     @Override
@@ -158,7 +160,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     }
 
     public void startStepCounterService() {
-        if (BatteryReceiverHandler.checkBatteryLevel(this, useData.getSaveBatteryThreshold())) {
+        if (BatteryReceiverHandler.checkBatteryLevel(this, userData.getSaveBatteryThreshold())) {
             createBatteryAlert();
             return;
         }
@@ -211,7 +213,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
     @SuppressLint("SetTextI18n")
     public void updateStepCount() {
-        int stepCount = useData.getStepsCounter();
+        int stepCount = userData.getStepsCounter();
         textViewSteps.setText(Integer.toString(stepCount));
 
         int maxProgress = progressBar.getMax();

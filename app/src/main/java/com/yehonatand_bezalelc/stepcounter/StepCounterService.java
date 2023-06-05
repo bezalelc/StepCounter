@@ -18,6 +18,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
     private SensorManager sensorManager;
     private Sensor stepSensor;
     private final static UserData userData = UserData.getInstance();
+    private boolean isFirstCount = true;
     private final List<StepCountObserver> observers = new ArrayList<>();
     private final IBinder binder = new StepCounterBinder();
     private BatteryReceiverHandler batteryReceiverHandler = null;
@@ -82,8 +83,13 @@ public class StepCounterService extends Service implements SensorEventListener, 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            userData.updateSteps((int) event.values[0]);
-            notifyStepCountChanged();
+            if (isFirstCount) {
+                userData.setStepsCounterLast((int) event.values[0]);
+                isFirstCount = false;
+            } else {
+                userData.updateSteps((int) event.values[0]);
+                notifyStepCountChanged();
+            }
         }
     }
 
