@@ -6,7 +6,8 @@ import java.util.HashMap;
 public class UserData {
 
     //    todo: 1. add notification in day start
-//    todo: 2. update firebaset in all set
+    //    todo: 2. update firebaset in all set
+
     private static UserData instance;
 
     public static final int MAX_HEIGHT = 230, MIN_HEIGHT = 40, MAX_WEIGHT = 300, MIN_WEIGHT = 30;
@@ -36,7 +37,7 @@ public class UserData {
 
     public Integer[] getSummerySorted() {
         Integer[] summerySorted = new Integer[8];
-        // todo yona
+        // todo yona: get sorted according to history
         summerySorted[0] = 5000;
         summerySorted[1] = 5000;
         summerySorted[2] = 5000;
@@ -44,7 +45,6 @@ public class UserData {
         summerySorted[4] = 7000;
         summerySorted[5] = 5000;
         summerySorted[6] = 200;//today
-//        summerySorted[7] = 200;//today
         return summerySorted;
     }
 
@@ -184,6 +184,7 @@ public class UserData {
     }
 
     public void updateSteps(int stepsRegisterValue) {
+        //  todo: 3. add new day data when day change according to local HH:MM
         setStepsCounter(stepsRegisterValue - this.stepsCounterLast);
         setStepsCounterLast(stepsRegisterValue);
     }
