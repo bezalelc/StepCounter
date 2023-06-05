@@ -187,10 +187,14 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         calendar.setTimeInMillis(System.currentTimeMillis());
 //        String[] dayNames = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
         String[] dayNames = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-        for (int j = 6; j >= 0; j--) {
+        calendar.add(Calendar.DAY_OF_YEAR, 0);
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        String dayName = dayNames[dayOfWeek - 1];
+        textViewSummery[6].setText(dayName);
+        for (int j = 5; j >= 0; j--) {
             calendar.add(Calendar.DAY_OF_YEAR, -1);
-            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-            String dayName = dayNames[dayOfWeek - 1];
+            dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            dayName = dayNames[dayOfWeek - 1];
             textViewSummery[j].setText(dayName);
         }
     }
