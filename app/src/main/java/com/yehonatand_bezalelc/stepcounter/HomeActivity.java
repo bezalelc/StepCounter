@@ -24,6 +24,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     private TextView textViewSteps;
     private TextView textViewProgressBar;
     private ImageButton buttonStartStop;
+    private ProgressBar progressBar;
     private StepCounterService.StepCounterBinder binder = null;
     // TODO count defined by user
     private boolean isStepCounterSensorExistAndPermissionGranted = false;
@@ -54,7 +55,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         return R.id.home;
     }
 
-    ProgressBar progressBar;
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.Q)

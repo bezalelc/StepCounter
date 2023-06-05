@@ -3,14 +3,19 @@ package com.yehonatand_bezalelc.stepcounter;
 
 import java.util.HashMap;
 
-import java.util.HashMap;
-
 public class UserData {
     private static UserData instance;
 
-    private String email, password, startTime;
+    private String email, password;
     private boolean count = false, notification = true;
-    private int goal = 25, stepsCounter = 0, weight = 75, height = 175, saveBatteryThreshold = 5, stepsCounterLast = 0;
+    private int goal = 5000;
+    private int stepsCounter = 0;
+    private int weight = 75;
+    private int height = 175;
+    private int saveBatteryThreshold = 5;
+    private int stepsCounterLast = 0;
+    private int startTimeH = 8;
+    private int startTimeM = 0;
     private HashMap<String, Integer> history = new HashMap<>();
 
     private UserData() {
@@ -41,12 +46,40 @@ public class UserData {
         this.password = password;
     }
 
-    public String getStartTime() {
-        return startTime;
+    public String getStartTimeStr() {
+        String timeStr = "";
+        if (startTimeH < 10) {
+            timeStr += "0";
+        }
+        timeStr += startTimeH + ":";
+        if (startTimeM < 10) {
+            timeStr += "0";
+        }
+        timeStr += startTimeM;
+
+
+        return timeStr;
     }
 
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
+    public int getStartTimeH() {
+        return startTimeH;
+    }
+
+    public void setStartTimeH(int startTimeH) {
+        this.startTimeH = startTimeH;
+    }
+
+    public int getStartTimeM() {
+        return startTimeM;
+    }
+
+    public void setStartTimeM(int startTimeM) {
+        this.startTimeM = startTimeM;
+    }
+
+    public void setStartTime(int h, int m) {
+        this.startTimeH = h;
+        this.startTimeM = m;
     }
 
     public boolean isCount() {
