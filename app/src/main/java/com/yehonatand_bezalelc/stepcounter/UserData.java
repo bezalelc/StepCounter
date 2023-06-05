@@ -10,11 +10,10 @@ public class UserData {
 
     private String email, password, startTime;
     private boolean count = false, notification = true;
-    private int goal = 25, stepsCounter = 0, weight = 75, height = 175, saveBatteryThreshold = 50, stepsCounterLast = 0;
+    private int goal = 25, stepsCounter = 0, weight = 75, height = 175, saveBatteryThreshold = 5, stepsCounterLast = 0;
     private HashMap<String, Integer> history = new HashMap<>();
 
     private UserData() {
-        // Private constructor to prevent instantiation from outside
     }
 
     public static synchronized UserData getInstance() {

@@ -26,14 +26,11 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     private ImageButton buttonStartStop;
     private StepCounterService.StepCounterBinder binder = null;
     // TODO count defined by user
-    private boolean count = false;
     private boolean isStepCounterSensorExistAndPermissionGranted = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
     //    private static final int PROGRESS_BAR_MAX = 1000;
     // TODO goal provided by user
     private final static UserData useData = UserData.getInstance();
-//    FirebaseAuth auth;
-//    FirebaseUser user;
 
     /**
      * this function is for the MainActivity class, the MainActivity will start the correct UI
@@ -65,8 +62,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        auth = FirebaseAuth.getInstance();
-//        user = auth.getCurrentUser();
         if (!FirebaseAuthHelper.isUserConnected()) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
@@ -100,8 +95,9 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         });
 
         buttonStartStop.setOnClickListener(view -> {
-            useData.setCount(!useData.isCount());
             if (isStepCounterSensorExistAndPermissionGranted) {
+                useData.setCount(!useData.isCount());
+
                 if (binder != null) {
                     stopStepCounterService();
                 } else {
@@ -167,7 +163,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             return;
         }
         Intent stepCounterServiceIntent = new Intent(this, StepCounterService.class);
-//        startService(stepCounterServiceIntent);
+        startService(stepCounterServiceIntent);
         bindService(stepCounterServiceIntent, this, Context.BIND_AUTO_CREATE);
         buttonStartStop.setImageResource(android.R.drawable.ic_media_pause);
     }
@@ -187,7 +183,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             unbindService(this);
             binder = null;
         }
-        count = false;
 
         stopService(new Intent(this, StepCounterService.class));
         buttonStartStop.setImageResource(android.R.drawable.ic_media_play);
