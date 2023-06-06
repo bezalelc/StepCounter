@@ -12,7 +12,7 @@ public class NotificationHandler {
         NOTIFICATION_TYPE_LOW_BATTERY(1,
                 "Low Battery",
                 "Your battery level is low. Please charge your device.",
-                R.drawable.ic_launcher_foreground,
+                R.drawable.pngwing,
                 false, false),
         NOTIFICATION_TYPE_SERVICE_RUNNING(2,
                 "Step Counter",
