@@ -36,7 +36,7 @@ public class UserData {
     }
 
     public Integer[] getSummerySorted() {
-        Integer[] summerySorted = new Integer[8];
+        Integer[] summerySorted = new Integer[7];
         // todo yona: get sorted according to history
         summerySorted[0] = 5000;
         summerySorted[1] = 5000;
@@ -200,18 +200,5 @@ public class UserData {
     public int stepsToDistance(int steps) {
         // Convert steps to distance in kilometers based on height and stride length
         return (int) ((steps * this.height * 0.414) / 1000.0);
-    }
-
-    public int getLastWeakAverage() {
-        if (history.isEmpty()) {
-            return 0; // Return 0 if the HashMap is empty to avoid division by zero
-        }
-
-        int sum = 0;
-        for (int value : history.values()) {
-            sum += value;
-        }
-
-        return sum / history.size();
     }
 }

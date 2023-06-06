@@ -107,6 +107,29 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
     }
 
+//    @SuppressLint("SetTextI18n")
+//    public void setTodayStatisticView() {
+//        TextView textViewDistance = findViewById(R.id.daily_text_view_km_num);
+//        textViewDistance.setText(Double.toString((double) userData.stepsToDistance(userData.getStepsCounter()) / 100.0));
+//        TextView textViewCalories = findViewById(R.id.daily_text_view_calories_num);
+//        textViewCalories.setText(Integer.toString(userData.calculateCaloriesBurned(userData.getStepsCounter())));
+//        TextView textViewAverage = findViewById(R.id.daily_text_view_average);
+//        Integer[] summerySorted = userData.getSummerySorted();
+//        int average = 0;
+//        for (Integer integer : summerySorted) {
+//            average += integer;
+//        }
+//        average /= summerySorted.length;
+//        textViewAverage.setText(Integer.toString(average));
+//
+//        ImageView icon = findViewById(R.id.daily_image_view_summery_icon7);
+//        if (summerySorted[6] >= userData.getGoal()) {
+//            icon.setImageResource(R.drawable.baseline_logout_24);
+//        } else {
+//            icon.setImageResource(R.drawable.back_btn);
+//        }
+//    }
+
     @SuppressLint("SetTextI18n")
     private void setStatisticViews() {
         TextView textViewDistance = findViewById(R.id.daily_text_view_km_num);
@@ -114,7 +137,15 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         TextView textViewCalories = findViewById(R.id.daily_text_view_calories_num);
         textViewCalories.setText(Integer.toString(userData.calculateCaloriesBurned(userData.getStepsCounter())));
         TextView textViewAverage = findViewById(R.id.daily_text_view_average);
-        textViewAverage.setText(Integer.toString(userData.getLastWeakAverage()));
+        Integer[] summerySorted = userData.getSummerySorted();
+        Log.d("setStatisticViews", Arrays.toString(summerySorted));
+        int average = 0;
+        for (Integer integer : summerySorted) {
+            average += integer;
+        }
+        average /= summerySorted.length;
+        textViewAverage.setText(Integer.toString(average));
+//        setTodayStatisticView();
 
         ImageView[] icons = new ImageView[7];
         icons[0] = findViewById(R.id.daily_image_view_summery_icon1);
@@ -124,7 +155,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         icons[4] = findViewById(R.id.daily_image_view_summery_icon5);
         icons[5] = findViewById(R.id.daily_image_view_summery_icon6);
         icons[6] = findViewById(R.id.daily_image_view_summery_icon7);
-        Integer[] summerySorted = userData.getSummerySorted();
         int i = 0;
         for (ImageView icon : icons) {
             if (summerySorted[i] >= userData.getGoal()) {
@@ -133,47 +163,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
                 icon.setImageResource(R.drawable.back_btn);
             }
         }
-
-//        LinkedList<Map.Entry<String, Integer>> entries = new LinkedList<>(userData.getHistory().entrySet());
-//        // Get a ListIterator starting from the end of the list
-//        ListIterator<Map.Entry<String, Integer>> iterator = entries.listIterator(entries.size());
-//        // Ignore the last entry
-//        if (iterator.hasPrevious()) {
-//            iterator.previous();
-//        }
-//        int i = 6;
-//        // Iterate over the entries in reverse order
-//        while (iterator.hasPrevious()) {
-//            if (i < 0) {
-//                break;
-//            }
-//            Map.Entry<String, Integer> entry = iterator.previous();
-//
-//            String key = entry.getKey();
-//            Integer value = entry.getValue();
-//            Log.d("iterator: ", i + ": " + value + ", bool=" + (value >= userData.getGoal()));
-//            if (value >= userData.getGoal()) {
-//                icons[i].setImageResource(R.drawable.baseline_logout_24);
-////                Toast.makeText(this, key + " " + i + " " + icons[i].getId(), Toast.LENGTH_SHORT).show();
-//            }
-//            i--;
-//        }
-
-
-//        int i = 0;
-//        for (HashMap.Entry<String, Integer> entry : userData.getHistory().entrySet()) {
-//            if (i >= icons.length) {
-//                break;
-//            }
-//            String key = entry.getKey();
-//            Integer value = entry.getValue();
-//
-//            if (value > userData.getGoal()) {
-//                icons[i].setImageResource(R.drawable.back_btn);
-//            }
-//            i++;
-//        }
-
 
         TextView[] textViewSummery = new TextView[7];
         textViewSummery[0] = findViewById(R.id.daily_text_view_summery1);
@@ -321,5 +310,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             textViewProgressBar.setPadding(progressBarLocation - textLengthInPixels - 20, 0, 0, 0);
         }
         progressBar.setProgress(stepCount);
+        setStatisticViews();
     }
 }
