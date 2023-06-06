@@ -162,6 +162,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
             } else {
                 icon.setImageResource(R.drawable.back_btn);
             }
+            i++;
         }
 
         TextView[] textViewSummery = new TextView[7];
