@@ -18,7 +18,7 @@ public class StepCounterService extends Service implements SensorEventListener, 
     private SensorManager sensorManager;
     private Sensor stepSensor;
     private final static UserData userData = UserData.getInstance();
-    private boolean isFirstCount = false;
+    private boolean isFirstCount = true;
     private final List<StepCountObserver> observers = new ArrayList<>();
     private final IBinder binder = new StepCounterBinder();
     private BatteryReceiverHandler batteryReceiverHandler = null;

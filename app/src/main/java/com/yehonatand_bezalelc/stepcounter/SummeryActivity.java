@@ -1,10 +1,12 @@
 package com.yehonatand_bezalelc.stepcounter;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,7 +70,25 @@ public class SummeryActivity extends MainActivity {
 
     private void updateChart() {
         List<BarEntry> entries = new ArrayList<>();
-        List<String> labels = new ArrayList<>(userData.getHistory().keySet());
+        List<String> labels = new ArrayList<>();
+
+        int x = 7; // Number of days
+
+        // Get the date before x days
+        LocalDate currentDate = LocalDate.now();
+
+
+        for (int i = dataPoints.size() - 1; i >= 0; i--) {
+            LocalDate dateBeforeXDays = currentDate.minusDays(i);
+
+            // Get the day and month of the date
+            int day = dateBeforeXDays.getDayOfMonth();
+            int month = dateBeforeXDays.getMonthValue();
+            // Format the day and month as desired
+            @SuppressLint("DefaultLocale") String formattedDay = String.format("%02d", day); // Add leading zero if needed
+            @SuppressLint("DefaultLocale") String formattedMonth = String.format("%02d", month); // Add leading zero if needed
+            labels.add(formattedMonth + "-" + formattedDay);
+        }
 
         for (int i = 0; i < dataPoints.size(); i++) {
             entries.add(new BarEntry(i, dataPoints.get(i)));

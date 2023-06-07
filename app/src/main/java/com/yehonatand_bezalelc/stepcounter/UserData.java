@@ -4,6 +4,10 @@ package com.yehonatand_bezalelc.stepcounter;
 import java.util.HashMap;
 
 public class UserData {
+
+    //    todo: 1. add notification in day start
+    //    todo: 2. update firebaset in all set
+
     private static UserData instance;
 
     public static final int MAX_HEIGHT = 230, MIN_HEIGHT = 40, MAX_WEIGHT = 300, MIN_WEIGHT = 30;
@@ -32,8 +36,8 @@ public class UserData {
     }
 
     public Integer[] getSummerySorted() {
-        Integer[] summerySorted = new Integer[8];
-        // todo yona
+        Integer[] summerySorted = new Integer[7];
+        // todo yona: get sorted according to history
         summerySorted[0] = 5000;
         summerySorted[1] = 5000;
         summerySorted[2] = 5000;
@@ -41,7 +45,6 @@ public class UserData {
         summerySorted[4] = 7000;
         summerySorted[5] = 5000;
         summerySorted[6] = 200;//today
-//        summerySorted[7] = 200;//today
         return summerySorted;
     }
 
@@ -89,18 +92,11 @@ public class UserData {
         return startTimeH;
     }
 
-    public void setStartTimeH(int startTimeH) {
-        this.startTimeH = startTimeH;
-    }
-
     public int getStartTimeM() {
         return startTimeM;
     }
 
-    public void setStartTimeM(int startTimeM) {
-        this.startTimeM = startTimeM;
-    }
-
+    // todo
     public void setStartTime(int h, int m) {
         this.startTimeH = h;
         this.startTimeM = m;
@@ -110,6 +106,7 @@ public class UserData {
         return count;
     }
 
+    // todo firebase or local file
     public void setCount(boolean count) {
         this.count = count;
     }
@@ -118,6 +115,7 @@ public class UserData {
         return notification;
     }
 
+    // todo
     public void setNotification(boolean notification) {
         this.notification = notification;
     }
@@ -126,6 +124,7 @@ public class UserData {
         return goal;
     }
 
+    // todo
     public void setGoal(int goal) {
         this.goal = goal;
     }
@@ -134,6 +133,7 @@ public class UserData {
         return stepsCounter;
     }
 
+    // todo
     public void setStepsCounter(int stepsCounterAdded) {
         this.stepsCounter += stepsCounterAdded;
     }
@@ -142,6 +142,7 @@ public class UserData {
         return weight;
     }
 
+    // todo
     public void setWeight(int weight) {
         this.weight = weight;
     }
@@ -150,6 +151,7 @@ public class UserData {
         return height;
     }
 
+    // todo
     public void setHeight(int height) {
         this.height = height;
     }
@@ -158,6 +160,7 @@ public class UserData {
         return saveBatteryThreshold;
     }
 
+    // todo
     public void setSaveBatteryThreshold(int saveBatteryThreshold) {
         this.saveBatteryThreshold = saveBatteryThreshold;
     }
@@ -166,6 +169,7 @@ public class UserData {
         return stepsCounterLast;
     }
 
+    // todo
     public void setStepsCounterLast(int stepsCounterLast) {
         this.stepsCounterLast = stepsCounterLast;
     }
@@ -174,11 +178,13 @@ public class UserData {
         return history;
     }
 
+    // todo maybe change hashmap
     public void setHistory(HashMap<String, Integer> history) {
         this.history = history;
     }
 
     public void updateSteps(int stepsRegisterValue) {
+        //  todo: 3. add new day data when day change according to local HH:MM
         setStepsCounter(stepsRegisterValue - this.stepsCounterLast);
         setStepsCounterLast(stepsRegisterValue);
     }
@@ -195,31 +201,4 @@ public class UserData {
         // Convert steps to distance in kilometers based on height and stride length
         return (int) ((steps * this.height * 0.414) / 1000.0);
     }
-
-    public int getLastWeakAverage() {
-        if (history.isEmpty()) {
-            return 0; // Return 0 if the HashMap is empty to avoid division by zero
-        }
-
-        int sum = 0;
-        for (int value : history.values()) {
-            sum += value;
-        }
-
-        return sum / history.size();
-    }
-
-//    private double stepsToTime(int steps) {
-//        // Convert steps to time in minutes
-//        // This is a rough estimate and can vary depending on individuals
-//        return steps * 0.067;
-//    }
-
 }
-
-
-//  count:
-//    stepsCounterLast=counter
-//  counter update:
-//    stepsCounter=counter-stepsCounterLast
-//    stepsCounterLast=counter}

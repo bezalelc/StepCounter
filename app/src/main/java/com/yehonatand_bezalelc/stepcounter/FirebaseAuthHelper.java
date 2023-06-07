@@ -96,6 +96,24 @@ public class FirebaseAuthHelper {
         return FireBaseStatus.FIELD_OK;
     }
 
+    public static FireBaseStatus forgotPassword(String email, final LoginRegisterCallback callback) {
+        FireBaseStatus confirmEmailStatus = confirmEmail(email);
+
+        if (confirmEmailStatus != FireBaseStatus.FIELD_OK) {
+            return confirmEmailStatus;
+        }
+
+        firebaseAuth.sendPasswordResetEmail(email)
+                .addOnSuccessListener(authResult -> {
+//                    FirebaseUser user = null;
+                    callback.onSuccess(null);
+                })
+                .addOnFailureListener(callback::onFailure);
+
+        return FireBaseStatus.FIELD_OK;
+    }
+
+
     public static boolean isUserConnected() {
         return firebaseAuth.getCurrentUser() != null;
     }
