@@ -6,19 +6,21 @@ import java.util.HashMap;
 public class UserData {
 
     //    todo: 1. add notification in day start
-    //    todo: 2. update firebaset in all set
 
     private static UserData instance;
 
     public static final int MAX_HEIGHT = 230, MIN_HEIGHT = 40, MAX_WEIGHT = 300, MIN_WEIGHT = 30;
+    public static final String GENERAL = "General",
+    STEP_COUNTER = "step_counter", GOAL = "goal",
+    WEIGHT = "weight", HEIGHT = "height", SAVE_BATTERY_THRESHOLD = "battery_threshold", STEPS_COUNTER_LAST = "steps_counter_last";
 
     private String email, password;
     private boolean count = false, notification = true;
     private int goal = 5000;
     private int stepsCounter = 0;
-    private int weight = 75;
-    private int height = 175;
-    private int saveBatteryThreshold = 5;
+    private int weight;
+    private int height;
+    private int saveBatteryThreshold = 30;
     private int stepsCounterLast = 0;
     private int startTimeH = 8;
     private int startTimeM = 0;
@@ -124,54 +126,55 @@ public class UserData {
         return goal;
     }
 
-    // todo
     public void setGoal(int goal) {
         this.goal = goal;
+        FirebaseAuthHelper.updateCollection(email, GENERAL, GOAL, goal);
     }
 
     public int getStepsCounter() {
         return stepsCounter;
     }
 
-    // todo
     public void setStepsCounter(int stepsCounterAdded) {
         this.stepsCounter += stepsCounterAdded;
+        FirebaseAuthHelper.updateCollection(email, GENERAL, STEP_COUNTER,
+                this.stepsCounter + stepsCounterAdded);
     }
 
     public int getWeight() {
         return weight;
     }
 
-    // todo
     public void setWeight(int weight) {
         this.weight = weight;
+        FirebaseAuthHelper.updateCollection(email, GENERAL, WEIGHT, weight);
     }
 
     public int getHeight() {
         return height;
     }
 
-    // todo
     public void setHeight(int height) {
         this.height = height;
+        FirebaseAuthHelper.updateCollection(email, GENERAL, HEIGHT, height);
     }
 
     public int getSaveBatteryThreshold() {
         return saveBatteryThreshold;
     }
 
-    // todo
     public void setSaveBatteryThreshold(int saveBatteryThreshold) {
         this.saveBatteryThreshold = saveBatteryThreshold;
+        FirebaseAuthHelper.updateCollection(email, GENERAL, SAVE_BATTERY_THRESHOLD, saveBatteryThreshold);
     }
 
     public int getStepsCounterLast() {
         return stepsCounterLast;
     }
 
-    // todo
     public void setStepsCounterLast(int stepsCounterLast) {
         this.stepsCounterLast = stepsCounterLast;
+        FirebaseAuthHelper.updateCollection(email, GENERAL, STEPS_COUNTER_LAST, stepsCounterLast);
     }
 
     public HashMap<String, Integer> getHistory() {

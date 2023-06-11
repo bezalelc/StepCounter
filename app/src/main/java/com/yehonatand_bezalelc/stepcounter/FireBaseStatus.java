@@ -23,7 +23,8 @@ public enum FireBaseStatus {
     ERROR_USER_DISABLED("ERROR_USER_DISABLED", "User account disabled"),
     ERROR_TOO_MANY_REQUESTS("ERROR_TOO_MANY_REQUESTS", "Too many unsuccessful attempts. Please try again later"),
     ERROR_OPERATION_NOT_ALLOWED("ERROR_OPERATION_NOT_ALLOWED", "Email/password authentication is not enabled"),
-    ERROR_ELSE("ERROR_ELSE", "");
+    ERROR_ELSE("ERROR_ELSE", ""),
+    FAILED_TO_ADD_COLLECTION("FAILED_TO_ADD_COLLECTION", "Failed to add collection");
 
     private final String status, errorMsg;
 

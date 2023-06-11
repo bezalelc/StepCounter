@@ -3,6 +3,21 @@ package com.yehonatand_bezalelc.stepcounter;
 import android.util.Patterns;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.SetOptions;
+
+import androidx.annotation.NonNull;
+
+import java.util.Date;
+import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Objects;
+
 
 public class FirebaseAuthHelper {
 
@@ -13,6 +28,7 @@ public class FirebaseAuthHelper {
     }
 
     public static final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    public static final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
     public static FireBaseStatus login(String email, String password, final LoginRegisterCallback callback) {
         FireBaseStatus confirmEmailFireBaseStatus = confirmEmail(email), confirmPasswordFireBaseStatus = confirmPassword(password);
@@ -46,13 +62,142 @@ public class FirebaseAuthHelper {
             return confirmPasswordStatus;
         }
 
+        Date thisDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        String nowDate = dateFormat.format(thisDate);
+        Map<String, Object> userInfo = new HashMap<String, Object>();
+        UserData userData = UserData.getInstance();
+
+        userData.setEmail(email);
+        userData.setHeight(Integer.parseInt(height));
+        userData.setWeight(Integer.parseInt(weight));
+
+        userInfo.put("height", height);
+        userInfo.put("weight", weight);
+        userInfo.put("goal", userData.getGoal());
+        userInfo.put("step_counter", userData.getStepsCounter());
+        userInfo.put("steps_counter_last", userData.getStepsCounterLast());
+        userInfo.put("battery_threshold", userData.getSaveBatteryThreshold());
+
+
+
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
-                    FirebaseUser user = authResult.getUser();
-                    callback.onSuccess(user);
+                    addCollection(email,"General", userInfo);
                 })
                 .addOnFailureListener(callback::onFailure);
 
+        return FireBaseStatus.FIELD_OK;
+    }
+
+
+//    public static FireBaseStatus addCollection(String email, String docName, Map inputData, final LoginRegisterCallback callback) {
+//        FireBaseStatus confirmEmailStatus = confirmEmail(email);
+//
+//        if (confirmEmailStatus != FireBaseStatus.FIELD_OK) {
+//            return confirmEmailStatus;
+//        }
+//
+//        Date thisDate = new Date();
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+//        Map<String, Object> userInfo = new HashMap<String, Object>();
+//        userInfo.put("height", height);
+//        userInfo.put("weight", weight);
+//
+//
+//
+//        firebaseAuth.createUserWithEmailAndPassword(email, password)
+//                .addOnSuccessListener(authResult -> {
+//                    addCollection(email, dateFormat.format(thisDate), userInfo, callback);
+//                })
+//                .addOnFailureListener(callback::onFailure);
+//
+//        return FireBaseStatus.FIELD_OK;
+//    }
+
+    public static FireBaseStatus deleteCollection(String email, String docName){
+/// TODO: 09/06/2023  fix this
+        firebaseFirestore.collection(email).document(docName)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+//                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+//                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
+        return FireBaseStatus.FIELD_OK;
+    }
+
+    public static FireBaseStatus updateCollection(String email, String docName, String field_name, Object inputData){
+        DocumentReference collectionRef = firebaseFirestore.collection(email).document(docName);
+
+
+        collectionRef.update(field_name, inputData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+//                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+//                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+        return FireBaseStatus.FIELD_OK;
+    }
+
+    public static FireBaseStatus loadUser(String email, String docName){
+        UserData userInstance = UserData.getInstance();
+        DocumentReference collectionRef = firebaseFirestore.collection(email).document(docName);
+        collectionRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    // Retrieve data from the document snapshot
+//                  TODO make one function for hem all in userdata
+                    userInstance.setGoal(Objects.requireNonNull(documentSnapshot.getLong("goal")).intValue());
+                    userInstance.setHeight(Objects.requireNonNull(documentSnapshot.getLong("height")).intValue());
+                    userInstance.setWeight(Objects.requireNonNull(documentSnapshot.getLong("weight")).intValue());
+                    userInstance.setStepsCounter(Objects.requireNonNull(documentSnapshot.getLong("step_counter")).intValue());
+                    userInstance.setStepsCounterLast(Objects.requireNonNull(documentSnapshot.getLong("steps_counter_last")).intValue());
+                    userInstance.setSaveBatteryThreshold(Objects.requireNonNull(documentSnapshot.getLong("battery_threshold")).intValue());
+
+                    // Do something with the data
+                    // ...
+                } else {
+                    // Document doesn't exist
+                }
+            }
+        });
+        return FireBaseStatus.FIELD_OK;
+    }
+
+    public static FireBaseStatus addCollection(String email, String docName, Map inputData){
+/// TODO: 09/06/2023  fix this
+        firebaseFirestore.collection(email).document(docName)
+                .set(inputData, SetOptions.merge())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+//                        lis
+//                                res =  true;
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+//
+//                        res =  false;
+                    }
+                });
         return FireBaseStatus.FIELD_OK;
     }
 
@@ -105,7 +250,6 @@ public class FirebaseAuthHelper {
 
         firebaseAuth.sendPasswordResetEmail(email)
                 .addOnSuccessListener(authResult -> {
-//                    FirebaseUser user = null;
                     callback.onSuccess(null);
                 })
                 .addOnFailureListener(callback::onFailure);
