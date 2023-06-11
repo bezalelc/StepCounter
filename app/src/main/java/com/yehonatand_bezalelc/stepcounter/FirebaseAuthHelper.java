@@ -67,13 +67,14 @@ public class FirebaseAuthHelper {
         String nowDate = dateFormat.format(thisDate);
         Map<String, Object> userInfo = new HashMap<String, Object>();
         UserData userData = UserData.getInstance();
+        userData.resetValues();
 
         userData.setEmail(email);
         userData.setHeight(Integer.parseInt(height));
         userData.setWeight(Integer.parseInt(weight));
 
-        userInfo.put("height", height);
-        userInfo.put("weight", weight);
+        userInfo.put("height", Integer.parseInt(height));
+        userInfo.put("weight", Integer.parseInt(weight));
         userInfo.put("goal", userData.getGoal());
         userInfo.put("step_counter", userData.getStepsCounter());
         userInfo.put("steps_counter_last", userData.getStepsCounterLast());
@@ -83,7 +84,16 @@ public class FirebaseAuthHelper {
 
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
-                    addCollection(email,"General", userInfo);
+//                    addCollection(email,"General", userInfo);
+                    firebaseFirestore.collection(email).document("General")
+                            .set(userInfo, SetOptions.merge())
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    callback.onSuccess(null);
+                                }
+                            })
+                            .addOnFailureListener(callback::onFailure);
                 })
                 .addOnFailureListener(callback::onFailure);
 

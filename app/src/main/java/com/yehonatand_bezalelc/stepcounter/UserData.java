@@ -204,4 +204,18 @@ public class UserData {
         // Convert steps to distance in kilometers based on height and stride length
         return (int) ((steps * this.height * 0.414) / 1000.0);
     }
+
+    public void resetValues(){
+        setEmail("");
+        setPassword("");
+        setCount(false);
+        setNotification(true);
+        setGoal(5000);
+        setStepsCounter(0);
+        setHeight(0);
+        setHeight(0);
+        setSaveBatteryThreshold(30);
+        setStepsCounterLast(0);
+        setStartTime(8, 0);
+    }
 }
