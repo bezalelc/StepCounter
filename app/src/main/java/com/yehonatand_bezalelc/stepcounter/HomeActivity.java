@@ -294,6 +294,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     @SuppressLint("SetTextI18n")
     public void updateStepCount() {
         int stepCount = userData.getStepsCounter();
+        Log.d("updateStepCount", "updateStepCount: " + stepCount);
         textViewSteps.setText(Integer.toString(stepCount));
 
         int maxProgress = progressBar.getMax();

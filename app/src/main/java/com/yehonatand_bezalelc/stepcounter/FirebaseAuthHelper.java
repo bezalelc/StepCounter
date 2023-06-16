@@ -1,5 +1,6 @@
 package com.yehonatand_bezalelc.stepcounter;
 
+import android.annotation.SuppressLint;
 import android.util.Patterns;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,7 +28,12 @@ public class FirebaseAuthHelper {
         void onFailure(Exception e);
     }
 
+    public interface LoadUserDataCallback {
+        void onSuccess();
+    }
+
     public static final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    @SuppressLint("StaticFieldLeak")
     public static final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
     public static FireBaseStatus login(String email, String password, final LoginRegisterCallback callback) {
@@ -102,71 +108,18 @@ public class FirebaseAuthHelper {
         return FireBaseStatus.FIELD_OK;
     }
 
-
-//    public static FireBaseStatus addCollection(String email, String docName, Map inputData, final LoginRegisterCallback callback) {
-//        FireBaseStatus confirmEmailStatus = confirmEmail(email);
-//
-//        if (confirmEmailStatus != FireBaseStatus.FIELD_OK) {
-//            return confirmEmailStatus;
-//        }
-//
-//        Date thisDate = new Date();
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-//        Map<String, Object> userInfo = new HashMap<String, Object>();
-//        userInfo.put("height", height);
-//        userInfo.put("weight", weight);
-//
-//
-//
-//        firebaseAuth.createUserWithEmailAndPassword(email, password)
-//                .addOnSuccessListener(authResult -> {
-//                    addCollection(email, dateFormat.format(thisDate), userInfo, callback);
-//                })
-//                .addOnFailureListener(callback::onFailure);
-//
-//        return FireBaseStatus.FIELD_OK;
-//    }
-
-    public static FireBaseStatus deleteCollection(String email, String docName){
-/// TODO: 09/06/2023  fix this
-        firebaseFirestore.collection(email).document(docName)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-//                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "Error deleting document", e);
-                    }
-                });
-        return FireBaseStatus.FIELD_OK;
-    }
-
-    public static FireBaseStatus updateCollection(String email, String docName, String field_name, Object inputData){
+    public static void updateCollection(String email, String docName, String field_name, Object inputData){
         DocumentReference collectionRef = firebaseFirestore.collection(email).document(docName);
 
 
         collectionRef.update(field_name, inputData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-//                        Log.d(TAG, "DocumentSnapshot successfully updated!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "Error updating document", e);
-                    }
+                    public void onSuccess(Void aVoid) {}
                 });
-        return FireBaseStatus.FIELD_OK;
     }
 
-    public static FireBaseStatus loadUser(String email, String docName){
+    public static FireBaseStatus loadUser(String email, String docName, final LoadUserDataCallback callback){
         UserData userInstance = UserData.getInstance();
         DocumentReference collectionRef = firebaseFirestore.collection(email).document(docName);
         collectionRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -174,42 +127,17 @@ public class FirebaseAuthHelper {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     // Retrieve data from the document snapshot
-//                  TODO make one function for hem all in userdata
-                    userInstance.setGoal(Objects.requireNonNull(documentSnapshot.getLong("goal")).intValue());
-                    userInstance.setHeight(Objects.requireNonNull(documentSnapshot.getLong("height")).intValue());
-                    userInstance.setWeight(Objects.requireNonNull(documentSnapshot.getLong("weight")).intValue());
-                    userInstance.setStepsCounter(Objects.requireNonNull(documentSnapshot.getLong("step_counter")).intValue());
-                    userInstance.setStepsCounterLast(Objects.requireNonNull(documentSnapshot.getLong("steps_counter_last")).intValue());
-                    userInstance.setSaveBatteryThreshold(Objects.requireNonNull(documentSnapshot.getLong("battery_threshold")).intValue());
-
-                    // Do something with the data
-                    // ...
-                } else {
-                    // Document doesn't exist
+                    int input_goal = Objects.requireNonNull(documentSnapshot.getLong("goal")).intValue();
+                    int input_weight = Objects.requireNonNull(documentSnapshot.getLong("weight")).intValue();
+                    int input_height = Objects.requireNonNull(documentSnapshot.getLong("height")).intValue();
+                    int input_step_counter = Objects.requireNonNull(documentSnapshot.getLong("step_counter")).intValue();
+                    int input_trashold_battery = Objects.requireNonNull(documentSnapshot.getLong("battery_threshold")).intValue();
+                    HashMap<String, Integer> input_HM =  (HashMap<String, Integer>) documentSnapshot.get("history");
+                    userInstance.initUserDate(input_goal, input_weight, input_height, input_step_counter, input_trashold_battery, input_HM);
+                    callback.onSuccess();
                 }
             }
         });
-        return FireBaseStatus.FIELD_OK;
-    }
-
-    public static FireBaseStatus addCollection(String email, String docName, Map inputData){
-/// TODO: 09/06/2023  fix this
-        firebaseFirestore.collection(email).document(docName)
-                .set(inputData, SetOptions.merge())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-//                        lis
-//                                res =  true;
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-//
-//                        res =  false;
-                    }
-                });
         return FireBaseStatus.FIELD_OK;
     }
 
@@ -268,7 +196,6 @@ public class FirebaseAuthHelper {
 
         return FireBaseStatus.FIELD_OK;
     }
-
 
     public static boolean isUserConnected() {
         return firebaseAuth.getCurrentUser() != null;

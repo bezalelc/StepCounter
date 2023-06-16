@@ -18,23 +18,6 @@ import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
     private TextInputLayout textInputLayoutEmail, textInputLayoutPassword;
-    private FirebaseAuth mAuth;
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            UserData.getInstance().setEmail(currentUser.getEmail());
-            FirebaseAuthHelper.loadUser(currentUser.getEmail(), UserData.GENERAL);
-            //todo add if the current day exist if not add or remove the end
-//            UserData.getInstance().isTodayExist();
-            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-            startActivity(intent);
-            finish();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +32,6 @@ public class LoginActivity extends AppCompatActivity {
         TextView textViewForgotPassword = findViewById(R.id.login_text_view_forgot_password);
 
 
-        mAuth = FirebaseAuth.getInstance();
-
         buttonLogin.setOnClickListener(v -> {
             String email = Objects.requireNonNull(textInputLayoutEmail.getEditText()).getText().toString().trim();
             String password = Objects.requireNonNull(textInputLayoutPassword.getEditText()).getText().toString().trim();
@@ -58,9 +39,12 @@ public class LoginActivity extends AppCompatActivity {
                     FirebaseAuthHelper.login(email, password, new FirebaseAuthHelper.LoginRegisterCallback() {
                         @Override
                         public void onSuccess(FirebaseUser user) {
-                            Toast.makeText(LoginActivity.this, "Sign in successful.", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                            finish();
+                            UserData.getInstance();
+                            FirebaseAuthHelper.loadUser(user.getEmail(), UserData.GENERAL, () -> {
+                                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                startActivity(intent);
+                                finish();
+                            });
                         }
 
                         @Override

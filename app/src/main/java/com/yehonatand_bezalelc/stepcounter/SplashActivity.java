@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 
+import com.google.firebase.auth.FirebaseUser;
+
 public class SplashActivity extends AppCompatActivity {
 
     private boolean userConnected() {
@@ -22,16 +24,23 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-//                Intent intent;
-////                Class<? extends AppCompatActivity> nextActivity = userConnected() ? MainActivity.class : LoginActivity.class;
-//                if (userConnected())
-//                    intent = new Intent(SplashActivity.this, LoginActivity.class);
-//                else
-//                    intent = new Intent(SplashActivity.this, MainActivity.class);
-////                startActivity(new Intent(SplashActivity.this, nextActivity));
-//                startActivity(new Intent(SplashActivity.this, userConnected() ? HomeActivity.class : LoginActivity.class));
-                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-                finish();
+                FirebaseUser currentUser = FirebaseAuthHelper.firebaseAuth.getCurrentUser();
+                if (currentUser != null) {
+                    UserData.getInstance().setEmail(currentUser.getEmail());
+                    UserData.getInstance().isTodayExist();
+                    FirebaseAuthHelper.loadUser(currentUser.getEmail(), UserData.GENERAL, new FirebaseAuthHelper.LoadUserDataCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+                else {
+                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                    finish();
+                }
             }
         }, 300);
     }

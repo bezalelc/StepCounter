@@ -87,7 +87,7 @@ public class SummeryActivity extends MainActivity {
             // Format the day and month as desired
             @SuppressLint("DefaultLocale") String formattedDay = String.format("%02d", day); // Add leading zero if needed
             @SuppressLint("DefaultLocale") String formattedMonth = String.format("%02d", month); // Add leading zero if needed
-            labels.add(formattedMonth + "-" + formattedDay);
+            labels.add(formattedDay + "-" + formattedMonth);
         }
 
         for (int i = 0; i < dataPoints.size(); i++) {

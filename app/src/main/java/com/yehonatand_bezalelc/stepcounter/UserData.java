@@ -1,6 +1,8 @@
 package com.yehonatand_bezalelc.stepcounter;
 
 
+import android.annotation.SuppressLint;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,7 +16,7 @@ public class UserData {
 
     public static final int MAX_HEIGHT = 230, MIN_HEIGHT = 40, MAX_WEIGHT = 300, MIN_WEIGHT = 30;
     public static final String GENERAL = "General",
-    STEP_COUNTER = "step_counter", GOAL = "goal",
+    STEP_COUNTER = "step_counter", GOAL = "goal", HISTORY = "history",
     WEIGHT = "weight", HEIGHT = "height", SAVE_BATTERY_THRESHOLD = "battery_threshold", STEPS_COUNTER_LAST = "steps_counter_last";
 
     private String email, password, lastDay;
@@ -29,6 +31,26 @@ public class UserData {
     private int startTimeM = 0;
     private HashMap<String, Integer> history = new HashMap<>();
 
+    public void initUserDate(int goal, int weight, int height, int stepsCounter, int saveBatteryThreshold, HashMap<String, Integer> history) {
+        this.goal = goal;
+        this.weight = weight;
+        this.height = height;
+        this.saveBatteryThreshold = saveBatteryThreshold;
+        this.stepsCounter = stepsCounter;
+
+        String[] last7Days = getLastWeek();
+        for (String last7Day : last7Days) {
+            if (history.get(last7Day) == null) {
+                this.history.put(last7Day, 0);
+            }
+            else {
+                long last7DayLong = Long.parseLong(String.valueOf(history.get(last7Day)));
+                int last7DayInt = (int) (last7DayLong);
+                this.history.put(last7Day, last7DayInt);
+            }
+        }
+    }
+
     private UserData() {
 //        history.put("05-13", 5500);
 //        history.put("05-14", 4000);
@@ -37,22 +59,14 @@ public class UserData {
 //        history.put("05-17", 6000);
 //        history.put("05-18", 11000);
 //        history.put("05-19", 400);
-
-        history.put("15-06-2023", 7000);
-        history.put("14-06-2023", 1000);
-        history.put("13-06-2023", 2000);
-        history.put("12-06-2023", 3000);
-        history.put("11-06-2023", 4000);
-        history.put("10-06-2023", 5000);
-        history.put("09-06-2023", 6000);
     }
 
     public Integer[] getSummerySorted() {
+        String[] last7Days = getLastWeek();
         Integer[] summerySorted = new Integer[7];
-        int i = 0;
-        for(String key : history.keySet()){
-            summerySorted[i] = history.get(key);
-            i++;
+
+        for (int i = 0; i < last7Days.length; i++) {
+            summerySorted[i] = history.getOrDefault(last7Days[i], 0);
         }
         return summerySorted;
     }
@@ -139,13 +153,22 @@ public class UserData {
     }
 
     public int getStepsCounter() {
+        isTodayExist();
+        String[] lastWeek;
+        lastWeek = getLastWeek();
+        Integer stepsCounter = history.get(lastWeek[lastWeek.length - 1]);
+        if (stepsCounter == null) {
+            return 0;
+        }
         return stepsCounter;
     }
 
     public void setStepsCounter(int stepsCounterAdded) {
         this.stepsCounter += stepsCounterAdded;
+        history.put(lastDay, stepsCounter);
+        setHistory(history);
         FirebaseAuthHelper.updateCollection(email, GENERAL, STEP_COUNTER,
-                this.stepsCounter + stepsCounterAdded);
+                this.stepsCounter);
     }
 
     public int getWeight() {
@@ -190,7 +213,18 @@ public class UserData {
 
     // todo maybe change hashmap
     public void setHistory(HashMap<String, Integer> history) {
-        this.history = history;
+        String[] last7Days = getLastWeek();
+        for (String last7Day : last7Days) {
+            if (history.get(last7Day) == null) {
+                this.history.put(last7Day, 0);
+            }
+            else {
+                long last7DayLong = Long.parseLong(String.valueOf(history.get(last7Day)));
+                int last7DayInt = (int) (last7DayLong);
+                this.history.put(last7Day, last7DayInt);
+            }
+        }
+        FirebaseAuthHelper.updateCollection(email, GENERAL, HISTORY, history);
     }
 
     public void updateSteps(int stepsRegisterValue) {
@@ -229,14 +263,7 @@ public class UserData {
         this.history = new HashMap<>();
     }
 
-    public void isTodayExist() {
-        history.put("15-06-2023", 7000);
-        history.put("14-06-2023", 1000);
-        history.put("13-06-2023", 2000);
-        history.put("12-06-2023", 3000);
-        history.put("11-06-2023", 4000);
-        history.put("10-06-2023", 5000);
-        history.put("09-06-2023", 6000);
+    public String getLastDay() {
         Calendar calendar = Calendar.getInstance();
         Date thisDate = new Date();
 
@@ -244,16 +271,47 @@ public class UserData {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String today = dateFormat.format(calendar.getTime());
         if (!today.equals(lastDay)) {
-            history.put(today, 16000);
+            history.put(today, 0);
+            lastDay = today;
+        }
+        return lastDay;
+    }
+
+    public String[] getLastWeek(){
+        // get last week in reverse order including today in the array
+        String[] lastWeek = new String[7];
+        Calendar calendar = Calendar.getInstance();
+        Date thisDate = new Date();
+
+        calendar.setTime(thisDate);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        String today = dateFormat.format(calendar.getTime());
+
+        for (int i = 7 - 1; i >= 0; i--) {
+            lastWeek[i] = today;
+            calendar.add(Calendar.DATE, -1);
+            today = dateFormat.format(calendar.getTime());
+        }
+        return lastWeek;
+    }
+
+    public void isTodayExist() {
+        Calendar calendar = Calendar.getInstance();
+        Date thisDate = new Date();
+
+        calendar.setTime(thisDate);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        String today = dateFormat.format(calendar.getTime());
+        if (!today.equals(lastDay)) {
+            history.put(today, 0);
             lastDay = today;
         }
 
-
+    // todo ?remove last week from history
         if (history.size() > 7) {
             calendar.add(Calendar.DATE, -7);
             String lastWeek = dateFormat.format(calendar.getTime());
             history.remove(lastWeek);
-//            history.remove(history.keySet().toArray()[0]);
         }
     }
 }
