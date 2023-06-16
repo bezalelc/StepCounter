@@ -206,16 +206,17 @@ public class UserData {
     }
 
     public void resetValues(){
-        setEmail("");
-        setPassword("");
-        setCount(false);
-        setNotification(true);
-        setGoal(5000);
-        setStepsCounter(0);
-        setHeight(0);
-        setHeight(0);
-        setSaveBatteryThreshold(30);
-        setStepsCounterLast(0);
-        setStartTime(8, 0);
+        this.email = "";
+        this.password = "";
+        this.count = false;
+        this.notification = true;
+        this.goal = 5000;
+        this.stepsCounter = 0;
+        this.weight = 0;
+        this.height = 0;
+        this.saveBatteryThreshold = 30;
+        this.stepsCounterLast = 0;
+        this.startTimeH = 8;
+        this.startTimeM = 0;
     }
 }

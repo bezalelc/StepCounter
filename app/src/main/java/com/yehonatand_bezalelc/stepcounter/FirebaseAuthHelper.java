@@ -80,7 +80,14 @@ public class FirebaseAuthHelper {
         userInfo.put("steps_counter_last", userData.getStepsCounterLast());
         userInfo.put("battery_threshold", userData.getSaveBatteryThreshold());
 
-
+        Map<String, Object> test = new HashMap<String, Object>();
+        test.put("17-06-2023", "3");
+        test.put("18-06-2023", "4");
+        test.put("19-06-2023", "5");
+        test.put("15-06-2023", "1");
+        test.put("16-06-2023", "2");
+        test.put("20-06-2023", "6");
+        userInfo.put("test", test);
 
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
