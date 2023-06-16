@@ -28,6 +28,8 @@ public class LoginActivity extends AppCompatActivity {
         if (currentUser != null) {
             UserData.getInstance().setEmail(currentUser.getEmail());
             FirebaseAuthHelper.loadUser(currentUser.getEmail(), UserData.GENERAL);
+            //todo add if the current day exist if not add or remove the end
+//            UserData.getInstance().isTodayExist();
             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
             startActivity(intent);
             finish();

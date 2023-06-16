@@ -1,6 +1,9 @@
 package com.yehonatand_bezalelc.stepcounter;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 public class UserData {
@@ -14,7 +17,7 @@ public class UserData {
     STEP_COUNTER = "step_counter", GOAL = "goal",
     WEIGHT = "weight", HEIGHT = "height", SAVE_BATTERY_THRESHOLD = "battery_threshold", STEPS_COUNTER_LAST = "steps_counter_last";
 
-    private String email, password;
+    private String email, password, lastDay;
     private boolean count = false, notification = true;
     private int goal = 5000;
     private int stepsCounter = 0;
@@ -27,26 +30,30 @@ public class UserData {
     private HashMap<String, Integer> history = new HashMap<>();
 
     private UserData() {
-        history.put("05-13", 5500);
-        history.put("05-14", 4000);
-        history.put("05-15", 1500);
-        history.put("05-16", 4567);
-        history.put("05-17", 6000);
-        history.put("05-18", 11000);
-        history.put("05-19", 400);
-        history.put("05-20", 400);
+//        history.put("05-13", 5500);
+//        history.put("05-14", 4000);
+//        history.put("05-15", 1500);
+//        history.put("05-16", 4567);
+//        history.put("05-17", 6000);
+//        history.put("05-18", 11000);
+//        history.put("05-19", 400);
+
+        history.put("15-06-2023", 7000);
+        history.put("14-06-2023", 1000);
+        history.put("13-06-2023", 2000);
+        history.put("12-06-2023", 3000);
+        history.put("11-06-2023", 4000);
+        history.put("10-06-2023", 5000);
+        history.put("09-06-2023", 6000);
     }
 
     public Integer[] getSummerySorted() {
         Integer[] summerySorted = new Integer[7];
-        // todo yona: get sorted according to history
-        summerySorted[0] = 5000;
-        summerySorted[1] = 5000;
-        summerySorted[2] = 5000;
-        summerySorted[3] = 5000;
-        summerySorted[4] = 7000;
-        summerySorted[5] = 5000;
-        summerySorted[6] = 200;//today
+        int i = 0;
+        for(String key : history.keySet()){
+            summerySorted[i] = history.get(key);
+            i++;
+        }
         return summerySorted;
     }
 
@@ -208,6 +215,7 @@ public class UserData {
     public void resetValues(){
         this.email = "";
         this.password = "";
+        this.lastDay = "";
         this.count = false;
         this.notification = true;
         this.goal = 5000;
@@ -218,5 +226,34 @@ public class UserData {
         this.stepsCounterLast = 0;
         this.startTimeH = 8;
         this.startTimeM = 0;
+        this.history = new HashMap<>();
+    }
+
+    public void isTodayExist() {
+        history.put("15-06-2023", 7000);
+        history.put("14-06-2023", 1000);
+        history.put("13-06-2023", 2000);
+        history.put("12-06-2023", 3000);
+        history.put("11-06-2023", 4000);
+        history.put("10-06-2023", 5000);
+        history.put("09-06-2023", 6000);
+        Calendar calendar = Calendar.getInstance();
+        Date thisDate = new Date();
+
+        calendar.setTime(thisDate);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        String today = dateFormat.format(calendar.getTime());
+        if (!today.equals(lastDay)) {
+            history.put(today, 16000);
+            lastDay = today;
+        }
+
+
+        if (history.size() > 7) {
+            calendar.add(Calendar.DATE, -7);
+            String lastWeek = dateFormat.format(calendar.getTime());
+            history.remove(lastWeek);
+//            history.remove(history.keySet().toArray()[0]);
+        }
     }
 }
