@@ -13,13 +13,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <!--        <ImageView-->
-        <!--            android:layout_width="50dp"-->
-        <!--            android:layout_height="50dp"-->
-        <!--            android:contentDescription="back"-->
-        <!--            android:padding="14dp"-->
-        <!--            android:src="@drawable/back_btn" />-->
-
         <ImageButton
                 android:id="@+id/settingBackButton"
                 android:layout_width="50dp"
@@ -59,29 +52,6 @@
                     android:orientation="vertical"
                     android:padding="15dp">
 
-                <!--                <RelativeLayout-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="wrap_content">-->
-
-                <!--                    <ImageView-->
-                <!--                        android:id="@+id/sensitivity"-->
-                <!--                        android:layout_width="40dp"-->
-                <!--                        android:layout_height="40dp"-->
-                <!--                        android:background="@drawable/round_back_notification"-->
-                <!--                        android:padding="12dp"-->
-                <!--                        android:src="@drawable/baseline_logout_24" />-->
-
-                <!--                    <TextView-->
-                <!--                        android:layout_width="wrap_content"-->
-                <!--                        android:layout_height="wrap_content"-->
-                <!--                        android:layout_centerVertical="true"-->
-                <!--                        android:layout_marginStart="20dp"-->
-                <!--                        android:layout_toEndOf="@+id/sensitivity"-->
-                <!--                        android:text="Sensitivity"-->
-                <!--                        android:textColor="#FFFFFF"-->
-                <!--                        android:textStyle="bold" />-->
-                <!--                </RelativeLayout>-->
-
                 <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -103,15 +73,6 @@
                             android:text="Step Goal"
                             android:textColor="#FFFFFF"
                             android:textStyle="bold"/>
-
-
-                    <!--                    <androidx.appcompat.widget.SwitchCompat-->
-                    <!--                            android:layout_width="wrap_content"-->
-                    <!--                            android:layout_height="wrap_content"-->
-                    <!--                            android:layout_alignParentEnd="true"-->
-                    <!--                            android:layout_centerVertical="true"-->
-                    <!--                            android:switchMinWidth="50dp"-->
-                    <!--                            android:theme="@style/notificationSwitch" />-->
 
                     <Spinner
                             android:id="@+id/goal_spinner"
@@ -154,7 +115,8 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:text="175 cm"/>
+                            android:text="175 cm"
+                            android:textSize="20sp"/>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -187,7 +149,8 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:text="75 kg"/>
+                            android:text="75 kg"
+                            android:textSize="20sp"/>
                 </RelativeLayout>
 
             </LinearLayout>

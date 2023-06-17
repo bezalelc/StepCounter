@@ -107,35 +107,10 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
 
     }
 
-//    @SuppressLint("SetTextI18n")
-//    public void setTodayStatisticView() {
-//        TextView textViewDistance = findViewById(R.id.daily_text_view_km_num);
-//        textViewDistance.setText(Double.toString((double) userData.stepsToDistance(userData.getStepsCounter()) / 100.0));
-//        TextView textViewCalories = findViewById(R.id.daily_text_view_calories_num);
-//        textViewCalories.setText(Integer.toString(userData.calculateCaloriesBurned(userData.getStepsCounter())));
-//        TextView textViewAverage = findViewById(R.id.daily_text_view_average);
-//        Integer[] summerySorted = userData.getSummerySorted();
-//        int average = 0;
-//        for (Integer integer : summerySorted) {
-//            average += integer;
-//        }
-//        average /= summerySorted.length;
-//        textViewAverage.setText(Integer.toString(average));
-//
-//        ImageView icon = findViewById(R.id.daily_image_view_summery_icon7);
-//        if (summerySorted[6] >= userData.getGoal()) {
-//            icon.setImageResource(R.drawable.baseline_logout_24);
-//        } else {
-//            icon.setImageResource(R.drawable.back_btn);
-//        }
-//    }
-
     @SuppressLint("SetTextI18n")
     private void setStatisticViews() {
         TextView textViewDistance = findViewById(R.id.daily_text_view_km_num);
         textViewDistance.setText(Double.toString((double) userData.stepsToDistance(userData.getStepsCounter()) / 100.0));
-//        TextView textViewCalories = findViewById(R.id.daily_text_view_calories_num);
-//        textViewCalories.setText(Integer.toString(userData.calculateCaloriesBurned(userData.getStepsCounter())));
         TextView textViewAverage = findViewById(R.id.daily_text_view_average);
         Integer[] summerySorted = userData.getSummerySorted();
         Log.d("setStatisticViews", Arrays.toString(summerySorted));
@@ -145,7 +120,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         }
         average /= summerySorted.length;
         textViewAverage.setText(Integer.toString(average));
-//        setTodayStatisticView();
 
         ImageView[] icons = new ImageView[7];
         icons[0] = findViewById(R.id.daily_image_view_summery_icon1);
@@ -279,7 +253,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     public void onServiceConnected(ComponentName componentName, IBinder service) {
         this.binder = (StepCounterService.StepCounterBinder) service;
         binder.getService().addObserver(this);
-//        Toast.makeText(this, "onServiceConnected: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
 
     }
 
@@ -288,7 +261,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         if (binder != null) {
             binder.getService().removeObserver(this);
         }
-//        Toast.makeText(this, "onServiceDisconnected: (binder == null)=" + (binder == null) + ", bound=" + bound + ", count=" + count, Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("SetTextI18n")

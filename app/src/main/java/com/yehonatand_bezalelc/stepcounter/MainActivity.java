@@ -75,7 +75,7 @@ public abstract class MainActivity extends AppCompatActivity {
             String osVersion = Build.VERSION.RELEASE; // Operating system version
             int sdkVersion = Build.VERSION.SDK_INT; // SDK version
 
-            String msg = "Step Counter\n\nBezalel Cohen 308571207\nBezalel Cohen 308571207\n" +
+            String msg = "Step Counter\n\nBezalel Cohen 308571207\nYehonatan Deri 209173988\n" +
                     "\nOperation System Information:\n" +
                     "OS Version: " + osVersion + "\n" +
                     "SDK Version: " + sdkVersion + "\n";
