@@ -26,7 +26,7 @@ public class SettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        if (!FirebaseAuthHelper.isUserConnected()) {
+        if (FirebaseAuthHelper.isUserNotConnected()) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
@@ -69,7 +69,7 @@ public class SettingActivity extends AppCompatActivity {
 
             }
         });
-        spinnerBattery.setSelection((userData.getSaveBatteryThreshold() / 5) - 1);
+        spinnerBattery.setSelection((userData.getSaveBatteryThreshold()) - 1);
 
         RelativeLayout relativeLayoutHeight = findViewById(R.id.relativeLayoutHeight);
         relativeLayoutHeight.setOnClickListener(v -> showHeightDialog());
@@ -107,6 +107,7 @@ public class SettingActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", (dialog, which) -> {
             // Get the height value from the EditText
             String height = heightEditText.getText().toString();
+
 
             // Perform validation on the height value
             try {

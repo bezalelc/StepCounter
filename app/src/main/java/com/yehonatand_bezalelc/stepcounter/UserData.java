@@ -10,33 +10,27 @@ import java.util.HashMap;
 
 public class UserData {
 
-    //    todo: 1. add notification in day start
-
     private static UserData instance;
 
     public static final int MAX_HEIGHT = 230, MIN_HEIGHT = 40, MAX_WEIGHT = 300, MIN_WEIGHT = 30;
-    public static final String GENERAL = "General",
-    STEP_COUNTER = "step_counter", GOAL = "goal", HISTORY = "history",
-    WEIGHT = "weight", HEIGHT = "height", SAVE_BATTERY_THRESHOLD = "battery_threshold", STEPS_COUNTER_LAST = "steps_counter_last";
+    public static final String GENERAL = "General", GOAL = "goal", HISTORY = "history", WEIGHT = "weight",
+    HEIGHT = "height", SAVE_BATTERY_THRESHOLD = "battery_threshold", STEPS_COUNTER_LAST = "steps_counter_last";
 
-    private String email, password, lastDay;
-    private boolean count = false, notification = true;
+    private String email, lastDay;
+    private boolean count = false;
     private int goal = 5000;
-    private int stepsCounter = 0;
     private int weight;
     private int height;
     private int saveBatteryThreshold = 30;
     private int stepsCounterLast = 0;
-    private int startTimeH = 8;
-    private int startTimeM = 0;
     private HashMap<String, Integer> history = new HashMap<>();
 
-    public void initUserDate(int goal, int weight, int height, int stepsCounter, int saveBatteryThreshold, HashMap<String, Integer> history) {
+    public void initUserDate(int goal, int weight, int height, int saveBatteryThreshold, HashMap<String, Integer> history) {
         this.goal = goal;
         this.weight = weight;
         this.height = height;
         this.saveBatteryThreshold = saveBatteryThreshold;
-        this.stepsCounter = stepsCounter;
+
 
         String[] last7Days = getLastWeek();
         for (String last7Day : last7Days) {
@@ -52,13 +46,6 @@ public class UserData {
     }
 
     private UserData() {
-//        history.put("05-13", 5500);
-//        history.put("05-14", 4000);
-//        history.put("05-15", 1500);
-//        history.put("05-16", 4567);
-//        history.put("05-17", 6000);
-//        history.put("05-18", 11000);
-//        history.put("05-19", 400);
     }
 
     public Integer[] getSummerySorted() {
@@ -79,68 +66,16 @@ public class UserData {
     }
 
     // Getters and setters for the member variables
-
-    public String getEmail() {
-        return email;
-    }
-
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getStartTimeStr() {
-        String timeStr = "";
-        if (startTimeH < 10) {
-            timeStr += "0";
-        }
-        timeStr += startTimeH + ":";
-        if (startTimeM < 10) {
-            timeStr += "0";
-        }
-        timeStr += startTimeM;
-
-
-        return timeStr;
-    }
-
-    public int getStartTimeH() {
-        return startTimeH;
-    }
-
-    public int getStartTimeM() {
-        return startTimeM;
-    }
-
-    // todo
-    public void setStartTime(int h, int m) {
-        this.startTimeH = h;
-        this.startTimeM = m;
     }
 
     public boolean isCount() {
         return count;
     }
 
-    // todo firebase or local file
     public void setCount(boolean count) {
         this.count = count;
-    }
-
-    public boolean isNotification() {
-        return notification;
-    }
-
-    // todo
-    public void setNotification(boolean notification) {
-        this.notification = notification;
     }
 
     public int getGoal() {
@@ -164,11 +99,9 @@ public class UserData {
     }
 
     public void setStepsCounter(int stepsCounterAdded) {
-        this.stepsCounter += stepsCounterAdded;
+        int stepsCounter = getStepsCounter() + stepsCounterAdded;
         history.put(lastDay, stepsCounter);
         setHistory(history);
-        FirebaseAuthHelper.updateCollection(email, GENERAL, STEP_COUNTER,
-                this.stepsCounter);
     }
 
     public int getWeight() {
@@ -228,7 +161,6 @@ public class UserData {
     }
 
     public void updateSteps(int stepsRegisterValue) {
-        //  todo: 3. add new day data when day change according to local HH:MM
         setStepsCounter(stepsRegisterValue - this.stepsCounterLast);
         setStepsCounterLast(stepsRegisterValue);
     }
@@ -248,33 +180,14 @@ public class UserData {
 
     public void resetValues(){
         this.email = "";
-        this.password = "";
         this.lastDay = "";
         this.count = false;
-        this.notification = true;
         this.goal = 5000;
-        this.stepsCounter = 0;
         this.weight = 0;
         this.height = 0;
         this.saveBatteryThreshold = 30;
         this.stepsCounterLast = 0;
-        this.startTimeH = 8;
-        this.startTimeM = 0;
         this.history = new HashMap<>();
-    }
-
-    public String getLastDay() {
-        Calendar calendar = Calendar.getInstance();
-        Date thisDate = new Date();
-
-        calendar.setTime(thisDate);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-        String today = dateFormat.format(calendar.getTime());
-        if (!today.equals(lastDay)) {
-            history.put(today, 0);
-            lastDay = today;
-        }
-        return lastDay;
     }
 
     public String[] getLastWeek(){
@@ -284,7 +197,7 @@ public class UserData {
         Date thisDate = new Date();
 
         calendar.setTime(thisDate);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String today = dateFormat.format(calendar.getTime());
 
         for (int i = 7 - 1; i >= 0; i--) {

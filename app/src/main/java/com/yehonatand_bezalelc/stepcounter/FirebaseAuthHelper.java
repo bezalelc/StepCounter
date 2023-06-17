@@ -5,17 +5,10 @@ import android.util.Patterns;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.SetOptions;
 
-import androidx.annotation.NonNull;
-
-import java.util.Date;
 import java.util.Map;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -68,10 +61,7 @@ public class FirebaseAuthHelper {
             return confirmPasswordStatus;
         }
 
-        Date thisDate = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-        String nowDate = dateFormat.format(thisDate);
-        Map<String, Object> userInfo = new HashMap<String, Object>();
+        Map<String, Object> userInfo = new HashMap<>();
         UserData userData = UserData.getInstance();
         userData.resetValues();
 
@@ -82,7 +72,6 @@ public class FirebaseAuthHelper {
         userInfo.put("height", Integer.parseInt(height));
         userInfo.put("weight", Integer.parseInt(weight));
         userInfo.put("goal", userData.getGoal());
-        userInfo.put("step_counter", userData.getStepsCounter());
         userInfo.put("steps_counter_last", userData.getStepsCounterLast());
         userInfo.put("battery_threshold", userData.getSaveBatteryThreshold());
 
@@ -92,17 +81,10 @@ public class FirebaseAuthHelper {
         userData.isTodayExist();
 
         firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnSuccessListener(authResult -> {
-                    firebaseFirestore.collection(email).document("General")
-                            .set(userInfo, SetOptions.merge())
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    callback.onSuccess(null);
-                                }
-                            })
-                            .addOnFailureListener(callback::onFailure);
-                })
+                .addOnSuccessListener(authResult -> firebaseFirestore.collection(email).document("General")
+                        .set(userInfo, SetOptions.merge())
+                        .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                        .addOnFailureListener(callback::onFailure))
                 .addOnFailureListener(callback::onFailure);
 
         return FireBaseStatus.FIELD_OK;
@@ -113,32 +95,24 @@ public class FirebaseAuthHelper {
 
 
         collectionRef.update(field_name, inputData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {}
-                });
+                .addOnSuccessListener(aVoid -> {});
     }
 
-    public static FireBaseStatus loadUser(String email, String docName, final LoadUserDataCallback callback){
+    public static void loadUser(String email, String docName, final LoadUserDataCallback callback){
         UserData userInstance = UserData.getInstance();
         DocumentReference collectionRef = firebaseFirestore.collection(email).document(docName);
-        collectionRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    // Retrieve data from the document snapshot
-                    int input_goal = Objects.requireNonNull(documentSnapshot.getLong("goal")).intValue();
-                    int input_weight = Objects.requireNonNull(documentSnapshot.getLong("weight")).intValue();
-                    int input_height = Objects.requireNonNull(documentSnapshot.getLong("height")).intValue();
-                    int input_step_counter = Objects.requireNonNull(documentSnapshot.getLong("step_counter")).intValue();
-                    int input_trashold_battery = Objects.requireNonNull(documentSnapshot.getLong("battery_threshold")).intValue();
-                    HashMap<String, Integer> input_HM =  (HashMap<String, Integer>) documentSnapshot.get("history");
-                    userInstance.initUserDate(input_goal, input_weight, input_height, input_step_counter, input_trashold_battery, input_HM);
-                    callback.onSuccess();
-                }
+        collectionRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Retrieve data from the document snapshot
+                int input_goal = Objects.requireNonNull(documentSnapshot.getLong("goal")).intValue();
+                int input_weight = Objects.requireNonNull(documentSnapshot.getLong("weight")).intValue();
+                int input_height = Objects.requireNonNull(documentSnapshot.getLong("height")).intValue();
+                int input_threshold_battery = Objects.requireNonNull(documentSnapshot.getLong("battery_threshold")).intValue();
+                HashMap<String, Integer> input_HM = (HashMap<String, Integer>) documentSnapshot.get("history");
+                userInstance.initUserDate(input_goal, input_weight, input_height, input_threshold_battery, input_HM);
+                callback.onSuccess();
             }
         });
-        return FireBaseStatus.FIELD_OK;
     }
 
     private static FireBaseStatus confirmEmail(String email) {
@@ -189,15 +163,13 @@ public class FirebaseAuthHelper {
         }
 
         firebaseAuth.sendPasswordResetEmail(email)
-                .addOnSuccessListener(authResult -> {
-                    callback.onSuccess(null);
-                })
+                .addOnSuccessListener(authResult -> callback.onSuccess(null))
                 .addOnFailureListener(callback::onFailure);
 
         return FireBaseStatus.FIELD_OK;
     }
 
-    public static boolean isUserConnected() {
-        return firebaseAuth.getCurrentUser() != null;
+    public static boolean isUserNotConnected() {
+        return firebaseAuth.getCurrentUser() == null;
     }
 }

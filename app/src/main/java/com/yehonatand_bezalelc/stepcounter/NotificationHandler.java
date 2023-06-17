@@ -5,7 +5,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 
 public class NotificationHandler {
     public enum NOTIFICATION_TYPE {
@@ -60,9 +59,6 @@ public class NotificationHandler {
 
     private static final String CHANNEL_ID = "step_counter_channel";
     private static final String CHANNEL_NAME = "Step Counter";
-
-
-    private static NotificationHandler instance;
     private final StepCounterService stepCounterService;
     private final NotificationManager notificationManager;
 
@@ -72,13 +68,6 @@ public class NotificationHandler {
 
         createNotificationChannel();
     }
-
-//    public static synchronized NotificationHandler getInstance(StepCounterService context) {
-//        if (instance == null) {
-//            instance = new NotificationHandler(context);
-//        }
-//        return instance;
-//    }
 
     public Notification generateNotification(NOTIFICATION_TYPE notificationType) {
         Notification.Builder builder = new Notification.Builder(stepCounterService, CHANNEL_ID)
