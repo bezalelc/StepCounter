@@ -92,6 +92,7 @@ public abstract class MainActivity extends AppCompatActivity {
         } else if (menuItem.getTitle().equals(MenuItemType.setting.toString())) {
             Intent intent = new Intent(this, SettingActivity.class);
             startActivity(intent);
+            finish();
         } else if (menuItem.getTitle().equals(MenuItemType.exit.toString())) {
             onBackPressed();
         }
