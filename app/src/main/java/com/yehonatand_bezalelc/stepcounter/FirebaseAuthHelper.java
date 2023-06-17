@@ -61,7 +61,7 @@ public class FirebaseAuthHelper {
             return confirmPasswordStatus;
         }
 
-        Map<String, Object> userInfo = new HashMap<>();
+        Map<String, Object> userHashMapInfo = new HashMap<>();
         UserData userData = UserData.getInstance();
         userData.resetValues();
 
@@ -69,20 +69,19 @@ public class FirebaseAuthHelper {
         userData.setHeight(Integer.parseInt(height));
         userData.setWeight(Integer.parseInt(weight));
 
-        userInfo.put("height", Integer.parseInt(height));
-        userInfo.put("weight", Integer.parseInt(weight));
-        userInfo.put("goal", userData.getGoal());
-        userInfo.put("steps_counter_last", userData.getStepsCounterLast());
-        userInfo.put("battery_threshold", userData.getSaveBatteryThreshold());
+        userHashMapInfo.put("height", Integer.parseInt(height));
+        userHashMapInfo.put("weight", Integer.parseInt(weight));
+        userHashMapInfo.put("goal", userData.getGoal());
+        userHashMapInfo.put("steps_counter_last", userData.getStepsCounterLast());
+        userHashMapInfo.put("battery_threshold", userData.getSaveBatteryThreshold());
 
         Map<String, Integer> week_history;
         week_history = userData.getHistory();
-        userInfo.put("history", week_history);
-        userData.isTodayExist();
+        userHashMapInfo.put("history", week_history);
 
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> firebaseFirestore.collection(email).document("General")
-                        .set(userInfo, SetOptions.merge())
+                        .set(userHashMapInfo, SetOptions.merge())
                         .addOnSuccessListener(aVoid -> callback.onSuccess(null))
                         .addOnFailureListener(callback::onFailure))
                 .addOnFailureListener(callback::onFailure);
@@ -108,8 +107,8 @@ public class FirebaseAuthHelper {
                 int input_weight = Objects.requireNonNull(documentSnapshot.getLong("weight")).intValue();
                 int input_height = Objects.requireNonNull(documentSnapshot.getLong("height")).intValue();
                 int input_threshold_battery = Objects.requireNonNull(documentSnapshot.getLong("battery_threshold")).intValue();
-                HashMap<String, Integer> input_HM = (HashMap<String, Integer>) documentSnapshot.get("history");
-                userInstance.initUserDate(input_goal, input_weight, input_height, input_threshold_battery, input_HM);
+                HashMap<String, Long> input_HM = (HashMap<String, Long>) documentSnapshot.get("history");
+                userInstance.initUserData(input_goal, input_weight, input_height, input_threshold_battery, input_HM);
                 callback.onSuccess();
             }
         });

@@ -24,12 +24,14 @@ public class UserData {
     private int saveBatteryThreshold = 30;
     private int stepsCounterLast = 0;
     private HashMap<String, Integer> history = new HashMap<>();
+    private HashMap<String, Long> firestoreHistory;
 
-    public void initUserDate(int goal, int weight, int height, int saveBatteryThreshold, HashMap<String, Integer> history) {
+    public void initUserData(int goal, int weight, int height, int saveBatteryThreshold, HashMap<String, Long> history) {
         this.goal = goal;
         this.weight = weight;
         this.height = height;
         this.saveBatteryThreshold = saveBatteryThreshold;
+        this.firestoreHistory = history;
 
 
         String[] last7Days = getLastWeek();
@@ -47,6 +49,14 @@ public class UserData {
 
     private UserData() {
         isTodayExist();
+        String[] last7Days = getLastWeek();
+        this.firestoreHistory = new HashMap<>();
+        for (String last7Day : last7Days) {
+            this.history.put(last7Day, 0);
+            firestoreHistory.put(last7Day, 0L);
+        }
+
+
     }
 
     public Integer[] getSummerySorted() {
@@ -146,18 +156,19 @@ public class UserData {
     }
 
     public void setHistory(HashMap<String, Integer> history) {
-        String[] last7Days = getLastWeek();
-        for (String last7Day : last7Days) {
-            if (history.get(last7Day) == null) {
-                this.history.put(last7Day, 0);
-            }
-            else {
-                long last7DayLong = Long.parseLong(String.valueOf(history.get(last7Day)));
-                int last7DayInt = (int) (last7DayLong);
-                this.history.put(last7Day, last7DayInt);
-            }
-        }
-        FirebaseAuthHelper.updateCollection(email, GENERAL, HISTORY, history);
+//        String[] last7Days = getLastWeek();
+//        for (String last7Day : last7Days) {
+//            if (history.get(last7Day) == null) {
+//                this.history.put(last7Day, 0);
+//            }
+//            else {
+//                long last7DayLong = Long.parseLong(String.valueOf(history.get(last7Day)));
+//                int last7DayInt = (int) (last7DayLong);
+//                this.history.put(last7Day, last7DayInt);
+//            }
+//        }
+        firestoreHistory.put(getLastDay(), (long) getStepsCounter());
+        FirebaseAuthHelper.updateCollection(email, GENERAL, HISTORY, firestoreHistory);
     }
 
     public void updateSteps(int stepsRegisterValue) {
@@ -225,5 +236,14 @@ public class UserData {
             String lastWeek = dateFormat.format(calendar.getTime());
             history.remove(lastWeek);
         }
+    }
+
+    public String getLastDay() {
+        Calendar calendar = Calendar.getInstance();
+        Date thisDate = new Date();
+
+        calendar.setTime(thisDate);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        return dateFormat.format(calendar.getTime());
     }
 }
