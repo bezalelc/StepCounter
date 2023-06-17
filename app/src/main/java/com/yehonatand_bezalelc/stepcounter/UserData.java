@@ -46,6 +46,7 @@ public class UserData {
     }
 
     private UserData() {
+        isTodayExist();
     }
 
     public Integer[] getSummerySorted() {
@@ -144,7 +145,6 @@ public class UserData {
         return history;
     }
 
-    // todo maybe change hashmap
     public void setHistory(HashMap<String, Integer> history) {
         String[] last7Days = getLastWeek();
         for (String last7Day : last7Days) {
@@ -220,7 +220,6 @@ public class UserData {
             lastDay = today;
         }
 
-    // todo ?remove last week from history
         if (history.size() > 7) {
             calendar.add(Calendar.DATE, -7);
             String lastWeek = dateFormat.format(calendar.getTime());

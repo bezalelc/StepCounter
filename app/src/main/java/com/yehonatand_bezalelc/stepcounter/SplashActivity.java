@@ -21,7 +21,6 @@ public class SplashActivity extends AppCompatActivity {
             FirebaseUser currentUser = FirebaseAuthHelper.firebaseAuth.getCurrentUser();
             if (currentUser != null) {
                 UserData.getInstance().setEmail(currentUser.getEmail());
-                UserData.getInstance().isTodayExist();
                 FirebaseAuthHelper.loadUser(currentUser.getEmail(), UserData.GENERAL, () -> {
                     Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                     startActivity(intent);
