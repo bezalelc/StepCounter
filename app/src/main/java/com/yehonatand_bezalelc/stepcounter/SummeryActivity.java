@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,10 +21,8 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 public class SummeryActivity extends MainActivity {
     private BarChart chart;
-    private Button buttonSteps, buttonDistance, buttonCalories;
-    private LinearLayout linearLayoutChart;
     private final UserData userData = UserData.getInstance();
-    private List<Integer> dataPoints = new ArrayList<>();
+    private final List<Integer> dataPoints = new ArrayList<>();
     private int limit;
     private final int MAX_DAYS = 7;
 
@@ -43,11 +40,10 @@ public class SummeryActivity extends MainActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        linearLayoutChart = findViewById(R.id.summery_linear_layout_chart);
         chart = findViewById(R.id.summery_chart);
-        buttonSteps = findViewById(R.id.summery_button_steps);
-        buttonDistance = findViewById(R.id.summery_button_distance);
-        buttonCalories = findViewById(R.id.summery_button_calories);
+        Button buttonSteps = findViewById(R.id.summery_button_steps);
+        Button buttonDistance = findViewById(R.id.summery_button_distance);
+        Button buttonCalories = findViewById(R.id.summery_button_calories);
         setSteps();
         updateChart();
         buttonSteps.setOnClickListener(view -> {
@@ -67,8 +63,6 @@ public class SummeryActivity extends MainActivity {
     private void updateChart() {
         List<BarEntry> entries = new ArrayList<>();
         List<String> labels = new ArrayList<>();
-
-        int x = 7; // Number of days
 
         // Get the date before x days
         LocalDate currentDate = LocalDate.now();
@@ -108,7 +102,6 @@ public class SummeryActivity extends MainActivity {
         limitLine.setLineColor(Color.BLUE); // Set the color of the line
         limitLine.setLineWidth(2f); // Set the width of the line
         limitLine.enableDashedLine(10f, 5f, 0f); // Enable a dashed line pattern
-//        limitLine.setLabel("Goal");
         yAxis.addLimitLine(limitLine);
 
         chart.invalidate();
