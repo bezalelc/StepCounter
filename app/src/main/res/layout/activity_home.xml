@@ -1,106 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="3dp"
-        tools:context=".HomeActivity">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="3dp"
+    android:background="#E83F51B5"
+    tools:context=".HomeActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="219dp"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/daily_background_shape_up"
-            android:id="@+id/daily_layout_up"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/daily_layout_middle">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                  tools:ignore="MissingConstraints"
-                  android:text="0"
-                  android:textSize="70sp" android:textStyle="bold"
-                  android:id="@+id/daily_text_view_steps"
-                  app:layout_constraintTop_toTopOf="parent"
-                  android:layout_marginTop="37dp"
-                  app:layout_constraintBottom_toTopOf="@+id/daily_text_view_goal"
-                  app:layout_constraintStart_toStartOf="parent" app:layout_constraintVertical_bias="0.47000003"
-                  app:layout_constraintEnd_toStartOf="@+id/daily_button_start_stop" android:layout_marginEnd="160dp"/>
+        android:layout_width="match_parent"
+        android:backgroundTint="#C852D657"
+        android:layout_height="219dp"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/daily_background_shape_up"
+        android:id="@+id/daily_layout_up"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/daily_layout_middle">
+
         <TextView
-                android:text="/5000 Steps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/daily_text_view_goal"
-                android:textSize="20sp"
-                app:layout_constraintTop_toBottomOf="@+id/daily_text_view_steps"
-                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-                android:layout_marginBottom="33dp"
-                app:layout_constraintBottom_toTopOf="@+id/daily_relative_layout_progress_bar"/>
+            android:id="@+id/daily_text_view_steps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="37dp"
+            android:text="0"
+            android:textSize="70sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/daily_text_view_goal"
+            app:layout_constraintEnd_toStartOf="@+id/daily_button_start_stop"
+            app:layout_constraintHorizontal_bias="0.369"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.47000003"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/daily_text_view_goal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="52dp"
+            android:layout_marginBottom="33dp"
+            android:text="/5000 Steps"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/daily_relative_layout_progress_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/daily_text_view_steps" />
 
         <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/height"
-                app:srcCompat="@android:drawable/ic_media_play"
-                android:id="@+id/daily_button_start_stop"
-                android:background="#00FFFFFF" android:backgroundTint="#4CAF50"
-                android:contentDescription="start/stop"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginTop="68dp" android:layout_marginEnd="84dp"
-                app:layout_constraintEnd_toEndOf="parent"/>
+            android:id="@+id/daily_button_start_stop"
+            android:layout_width="72dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="76dp"
+            android:background="#00FFFFFF"
+            android:backgroundTint="#4CAF50"
+            android:contentDescription="start/stop"
+            android:src="@drawable/height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_media_play" />
+
         <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/daily_text_view_goal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/daily_relative_layout_progress_bar"
+            android:layout_marginBottom="25dp"
+            android:layout_marginHorizontal="15dp">
+            <ProgressBar
+                style="@android:style/Widget.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/daily_text_view_goal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/daily_relative_layout_progress_bar"
-                android:layout_marginBottom="25dp"
-                android:layout_marginHorizontal="15dp">
-            <ProgressBar
-                    style="@android:style/Widget.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:id="@+id/daily_progress_bar"
-                    android:progressDrawable="@drawable/daily_progress_bar"
-                    android:layout_marginBottom="20dp"/>
+                android:id="@+id/daily_progress_bar"
+                android:progressDrawable="@drawable/daily_progress_bar"
+                android:layout_marginBottom="20dp"/>
+
             <TextView
-                    android:id="@+id/daily_text_view_progress_bar"
-                    android:background="#00000000"
-                    android:layout_alignStart="@id/daily_progress_bar"
-                    android:layout_alignEnd="@id/daily_progress_bar"
-                    android:layout_alignTop="@id/daily_progress_bar"
-                    android:layout_alignBottom="@+id/daily_progress_bar"
-                    android:layout_marginTop="7dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:maxLength="4"
-                    android:layout_marginHorizontal="3dp"
-                    android:text="0%"
-                    android:textSize="24sp"
-                    android:textColor="#43C62D" android:fontFamily="@font/comic_neue_italic"
-                    android:textStyle="bold|italic"/>
+                android:id="@+id/daily_text_view_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/daily_progress_bar"
+                android:layout_alignTop="@id/daily_progress_bar"
+                android:layout_alignEnd="@id/daily_progress_bar"
+                android:layout_alignBottom="@+id/daily_progress_bar"
+                android:layout_marginHorizontal="3dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginBottom="4dp"
+                android:background="#00000000"
+                android:maxLength="4"
+                android:textColor="#43C62D"
+                android:textSize="12sp"
+                android:textStyle="bold|italic" />
         </RelativeLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/daily_layout_middle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/daily_background_shape_up"
-        app:layout_constraintBottom_toTopOf="@+id/daily_layout_down"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/daily_layout_up"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/daily_layout_up">
+        android:backgroundTint="#C852D657"
+        android:background="@drawable/daily_background_shape_up"
+        android:id="@+id/daily_layout_middle"
+        app:layout_constraintBottom_toTopOf="@+id/daily_layout_down" app:layout_constraintEnd_toEndOf="parent">
+
 
         <ImageView
             android:id="@+id/daily_image_view_km"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/height"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="55dp"
+            android:layout_height="47dp"
+            android:src="@drawable/destination"
+
+            app:layout_constraintBottom_toTopOf="@+id/daily_text_view_km_num"
+            app:layout_constraintEnd_toStartOf="@+id/daily_image_view_calories"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -111,7 +131,7 @@
             android:text="0.5"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@+id/daily_text_view_km_str"
-            app:layout_constraintEnd_toStartOf="@+id/daily_image_view_km"
+            app:layout_constraintEnd_toStartOf="@+id/daily_text_view_calories_num"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/daily_image_view_km"
             tools:ignore="MissingConstraints" />
@@ -120,80 +140,57 @@
             android:id="@+id/daily_text_view_km_str"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
             android:text="km"
-            android:textSize="24sp"
+            android:textSize="22sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/daily_text_view_calories_str"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/daily_text_view_km_num"
             tools:ignore="MissingConstraints" />
 
+        <ImageView
+            android:id="@+id/daily_image_view_calories"
+            android:layout_width="55dp"
+            android:layout_height="47dp"
+            android:src="@drawable/flame"
+            app:layout_constraintBottom_toTopOf="@+id/daily_text_view_calories_num"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/daily_image_view_km"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!--        <ImageView-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:src="@drawable/height"-->
-        <!--                android:id="@+id/daily_image_view_calories"-->
-        <!--                app:layout_constraintStart_toEndOf="@+id/daily_image_view_km"-->
-        <!--                app:layout_constraintTop_toTopOf="parent"-->
-        <!--                app:layout_constraintEnd_toStartOf="@+id/daily_image_view_time"-->
-        <!--                app:layout_constraintBottom_toTopOf="@+id/daily_text_view_calories_num"/>-->
-        <!--        <TextView-->
-        <!--                android:text="600.8"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:textSize="24sp"-->
-        <!--                tools:ignore="MissingConstraints"-->
-        <!--                android:id="@+id/daily_text_view_calories_num"-->
-        <!--                tools:layout_editor_absoluteX="142dp"-->
-        <!--                app:layout_constraintTop_toBottomOf="@+id/daily_image_view_calories"-->
-        <!--                app:layout_constraintBottom_toTopOf="@+id/daily_text_view_calories_str"/>-->
-        <!--        <TextView-->
-        <!--                android:text="Calories"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:textSize="24sp"-->
-        <!--                android:id="@+id/daily_text_view_calories_str"-->
-        <!--                app:layout_constraintTop_toBottomOf="@+id/daily_text_view_calories_num"-->
-        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--                app:layout_constraintStart_toEndOf="@+id/daily_text_view_km_str"-->
-        <!--                app:layout_constraintEnd_toStartOf="@+id/daily_text_view_time_str"/>-->
+        <TextView
+            android:id="@+id/daily_text_view_calories_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="600.8"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/daily_text_view_calories_str"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.715"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/daily_image_view_calories"
+            tools:ignore="MissingConstraints" />
 
+        <TextView
+            android:id="@+id/daily_text_view_calories_str"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="19dp"
+            android:text="Calories"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/daily_text_view_km_str"
+            app:layout_constraintTop_toBottomOf="@+id/daily_text_view_calories_num" />
 
-        <!--        <ImageView-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:src="@drawable/height"-->
-        <!--                app:layout_constraintTop_toTopOf="parent"-->
-        <!--                android:id="@+id/daily_image_view_time"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toEndOf="@+id/daily_image_view_calories"-->
-        <!--                app:layout_constraintBottom_toTopOf="@+id/daily_text_view_time_num" android:layout_marginStart="32dp"/>-->
-        <!--        <TextView-->
-        <!--                android:text="1h 6m"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:textSize="24sp"-->
-        <!--                tools:ignore="MissingConstraints"-->
-        <!--                android:id="@+id/daily_text_view_time_num"-->
-        <!--                tools:layout_editor_absoluteX="286dp" app:layout_constraintTop_toBottomOf="@+id/daily_image_view_time"-->
-        <!--                app:layout_constraintBottom_toTopOf="@+id/daily_text_view_time_str"/>-->
-        <!--        <TextView-->
-        <!--                android:text="Walking Time"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:textSize="24sp"-->
-        <!--                tools:ignore="MissingConstraints"-->
-        <!--                android:id="@+id/daily_text_view_time_str"-->
-        <!--                app:layout_constraintTop_toBottomOf="@+id/daily_text_view_time_num"-->
-        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--                app:layout_constraintStart_toEndOf="@+id/daily_text_view_calories_num"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="1.0"/>-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="#C852D657"
             android:background="@drawable/daily_background_shape_up"
             android:id="@+id/daily_layout_down"
             app:layout_constraintRight_toRightOf="parent"
@@ -234,7 +231,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginRight="10dp">
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -248,7 +246,8 @@
             <LinearLayout
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginRight="10dp">
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -262,7 +261,8 @@
             <LinearLayout
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginRight="10dp">
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -276,7 +276,8 @@
             <LinearLayout
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginRight="10dp">
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -290,7 +291,8 @@
             <LinearLayout
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginRight="10dp">
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -304,7 +306,8 @@
             <LinearLayout
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginRight="10dp">
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -318,7 +321,8 @@
             <LinearLayout
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                android:layout_marginRight="2dp">
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -333,17 +337,17 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:itemBackground="@color/teal_700"
-            app:itemIconTint="@drawable/home_nav_bar"
-            app:itemTextColor="@drawable/home_nav_bar"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:menu="@menu/menu_navigation"
-    />
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:background="#018786"
+        android:layout_height="wrap_content"
+        app:itemBackground="@color/teal_700"
+        app:itemIconTint="@drawable/home_nav_bar"
+        app:itemTextColor="@drawable/home_nav_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_navigation" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

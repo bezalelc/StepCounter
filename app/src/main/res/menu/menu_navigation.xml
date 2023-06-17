@@ -12,7 +12,7 @@
 
     <item
         android:id="@+id/summery"
-        android:icon="@drawable/summery_black_48dp"
+        android:icon="@drawable/clipboard_with_pencil_"
         android:title="Summery" />
 
 </menu>

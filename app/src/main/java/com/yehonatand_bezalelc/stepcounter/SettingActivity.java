@@ -2,8 +2,6 @@ package com.yehonatand_bezalelc.stepcounter;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,16 +11,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 
-import androidx.appcompat.widget.SwitchCompat;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SettingActivity extends AppCompatActivity {
 
     private final UserData userData = UserData.getInstance();
-    private Spinner spinnerGoal, spinnerBattery;
     ArrayAdapter<CharSequence> adapterGoal, adapterBattery;
-    private TextView textViewStart, heightTextViewEdit, weightTextViewEdit;
-    private RelativeLayout relativeLayoutHeight, relativeLayoutWeight;
+    private TextView heightTextViewEdit, weightTextViewEdit;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -40,7 +35,7 @@ public class SettingActivity extends AppCompatActivity {
         ImageButton settingBackButton = findViewById(R.id.settingBackButton);
         RelativeLayout logoutButton = findViewById(R.id.logout);
 
-        spinnerGoal = findViewById(R.id.goal_spinner);
+        Spinner spinnerGoal = findViewById(R.id.goal_spinner);
         adapterGoal = ArrayAdapter.createFromResource(this, R.array.step_goal_list, android.R.layout.simple_spinner_item);
         adapterGoal.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerGoal.setAdapter(adapterGoal);
@@ -58,7 +53,7 @@ public class SettingActivity extends AppCompatActivity {
         });
         spinnerGoal.setSelection((userData.getGoal() / 500) - 1);
 
-        spinnerBattery = findViewById(R.id.battery_spinner);
+        Spinner spinnerBattery = findViewById(R.id.battery_spinner);
         adapterBattery = ArrayAdapter.createFromResource(this, R.array.battery_percents_list, android.R.layout.simple_spinner_item);
         adapterBattery.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerBattery.setAdapter(adapterBattery);
@@ -76,12 +71,12 @@ public class SettingActivity extends AppCompatActivity {
         });
         spinnerBattery.setSelection((userData.getSaveBatteryThreshold() / 5) - 1);
 
-        relativeLayoutHeight = findViewById(R.id.relativeLayoutHeight);
+        RelativeLayout relativeLayoutHeight = findViewById(R.id.relativeLayoutHeight);
         relativeLayoutHeight.setOnClickListener(v -> showHeightDialog());
         heightTextViewEdit = findViewById(R.id.heightTextViewEdit);
         heightTextViewEdit.setText(userData.getHeight() + " cm");
 
-        relativeLayoutWeight = findViewById(R.id.relativeLayoutWeight);
+        RelativeLayout relativeLayoutWeight = findViewById(R.id.relativeLayoutWeight);
         relativeLayoutWeight.setOnClickListener(v -> showWeightDialog());
         weightTextViewEdit = findViewById(R.id.weightTextViewEdit);
         weightTextViewEdit.setText(userData.getWeight() + " kg");
@@ -98,23 +93,8 @@ public class SettingActivity extends AppCompatActivity {
             finish();
         });
     }
-//todo delete ?
-    private void showTimePickerDialog() {
-//        Calendar currentTime = Calendar.getInstance();
-        int hour = userData.getStartTimeH();
-        int minute = userData.getStartTimeM();
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                userData.setStartTime(hourOfDay, minute);
-                textViewStart.setText(userData.getStartTimeStr());
-            }
-        }, hour, minute, true);
-
-        timePickerDialog.show();
-    }
-
+    @SuppressLint("SetTextI18n")
     private void showHeightDialog() {
         // Inflate the custom layout
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_height, null);
@@ -124,28 +104,24 @@ public class SettingActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogView);
         builder.setTitle("Enter Height");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Get the height value from the EditText
-                String height = heightEditText.getText().toString();
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            // Get the height value from the EditText
+            String height = heightEditText.getText().toString();
 
-                // Perform validation on the height value
-                try {
-                    int heightValue = Integer.parseInt(height);
-                    if (heightValue >= UserData.MIN_HEIGHT && heightValue <= UserData.MAX_HEIGHT) {
-                        userData.setHeight(Integer.parseInt(height));
-                        heightTextViewEdit.setText(userData.getHeight() + " cm");
-                    } else {
-                        // Height is outside the valid range, show an error message
-                        String msg = "Height must be between " + UserData.MIN_HEIGHT + " and " + UserData.MAX_HEIGHT;
-                        Toast.makeText(SettingActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (NumberFormatException e) {
-                    // Invalid height value, show an error message
-                    Toast.makeText(SettingActivity.this, "Invalid height value", Toast.LENGTH_SHORT).show();
+            // Perform validation on the height value
+            try {
+                int heightValue = Integer.parseInt(height);
+                if (heightValue >= UserData.MIN_HEIGHT && heightValue <= UserData.MAX_HEIGHT) {
+                    userData.setHeight(Integer.parseInt(height));
+                    heightTextViewEdit.setText(userData.getHeight() + " cm");
+                } else {
+                    // Height is outside the valid range, show an error message
+                    String msg = "Height must be between " + UserData.MIN_HEIGHT + " and " + UserData.MAX_HEIGHT;
+                    Toast.makeText(SettingActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
+            } catch (NumberFormatException e) {
+                // Invalid height value, show an error message
+                Toast.makeText(SettingActivity.this, "Invalid height value", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("Cancel", null);
@@ -155,6 +131,7 @@ public class SettingActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    @SuppressLint("SetTextI18n")
     public void showWeightDialog() {
         // Inflate the custom layout
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_weight, null);
@@ -164,27 +141,23 @@ public class SettingActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogView);
         builder.setTitle("Enter Weight");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Get the weight value from the EditText
-                String weight = weightEditText.getText().toString();
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            // Get the weight value from the EditText
+            String weight = weightEditText.getText().toString();
 
-                try {
-                    int weightValue = Integer.parseInt(weight);
-                    if (weightValue >= UserData.MIN_WEIGHT && weightValue <= UserData.MAX_WEIGHT) {
-                        userData.setWeight(Integer.parseInt(weight));
-                        weightTextViewEdit.setText(userData.getWeight() + " kg");
-                    } else {
-                        // Weight is outside the valid range, show an error message
-                        String msg = "Weight must be between " + UserData.MIN_WEIGHT + " and " + UserData.MAX_WEIGHT;
-                        Toast.makeText(SettingActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (NumberFormatException e) {
-                    // Invalid weight value, show an error message
-                    Toast.makeText(SettingActivity.this, "Invalid weight value", Toast.LENGTH_SHORT).show();
+            try {
+                int weightValue = Integer.parseInt(weight);
+                if (weightValue >= UserData.MIN_WEIGHT && weightValue <= UserData.MAX_WEIGHT) {
+                    userData.setWeight(Integer.parseInt(weight));
+                    weightTextViewEdit.setText(userData.getWeight() + " kg");
+                } else {
+                    // Weight is outside the valid range, show an error message
+                    String msg = "Weight must be between " + UserData.MIN_WEIGHT + " and " + UserData.MAX_WEIGHT;
+                    Toast.makeText(SettingActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
+            } catch (NumberFormatException e) {
+                // Invalid weight value, show an error message
+                Toast.makeText(SettingActivity.this, "Invalid weight value", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("Cancel", null);
@@ -193,6 +166,4 @@ public class SettingActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-
 }

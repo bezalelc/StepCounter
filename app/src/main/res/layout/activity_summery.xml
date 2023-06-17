@@ -24,6 +24,7 @@
 
     <LinearLayout
             android:layout_width="match_parent"
+            android:background="#2C8130"
             android:layout_height="0dp"
             android:id="@+id/summery_linear_layout_chart"
             android:orientation="vertical"
@@ -52,14 +53,24 @@
                 android:text="Steps"
                 android:id="@+id/summery_button_steps"
                 android:background="@drawable/summery_button"
-                android:elevation="20dp"/>
+                android:elevation="20dp"
+                android:layout_marginRight="10sp"/>
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Distance"
                 android:id="@+id/summery_button_distance"
                 android:background="@drawable/summery_button"
-                android:elevation="20dp"/>
+                android:elevation="20dp"
+                android:layout_marginRight="10sp"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Calories"
+                android:id="@+id/summery_button_calories"
+                android:background="@drawable/summery_button"
+                android:elevation="20dp"
+                android:layout_marginRight="10sp"/>
     </LinearLayout>
 
 
@@ -67,6 +78,7 @@
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#018786"
             app:itemBackground="@color/teal_700"
             app:itemIconTint="@drawable/home_nav_bar"
             app:itemTextColor="@drawable/home_nav_bar"

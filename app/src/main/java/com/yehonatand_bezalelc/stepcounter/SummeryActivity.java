@@ -22,7 +22,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 public class SummeryActivity extends MainActivity {
     private BarChart chart;
-    private Button buttonSteps, buttonDistance, buttonTime, buttonCalories;
+    private Button buttonSteps, buttonDistance, buttonCalories;
     private LinearLayout linearLayoutChart;
     private final UserData userData = UserData.getInstance();
     private List<Integer> dataPoints = new ArrayList<>();
@@ -47,8 +47,7 @@ public class SummeryActivity extends MainActivity {
         chart = findViewById(R.id.summery_chart);
         buttonSteps = findViewById(R.id.summery_button_steps);
         buttonDistance = findViewById(R.id.summery_button_distance);
-//        buttonTime = findViewById(R.id.summery_button_time);
-//        buttonCalories = findViewById(R.id.summery_button_calories);
+        buttonCalories = findViewById(R.id.summery_button_calories);
         setSteps();
         updateChart();
         buttonSteps.setOnClickListener(view -> {
@@ -59,13 +58,10 @@ public class SummeryActivity extends MainActivity {
             setDistance();
             updateChart();
         });
-//        buttonTime.setOnClickListener(view -> {
-//            updateChart();
-//        });
-//        buttonCalories.setOnClickListener(view -> {
-//            setCalories();
-//            updateChart();
-//        });
+        buttonCalories.setOnClickListener(view -> {
+            setCalories();
+            updateChart();
+        });
     }
 
     private void updateChart() {
