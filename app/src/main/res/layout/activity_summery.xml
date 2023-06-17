@@ -60,20 +60,6 @@
                 android:id="@+id/summery_button_distance"
                 android:background="@drawable/summery_button"
                 android:elevation="20dp"/>
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Time"
-                android:id="@+id/summery_button_time"
-                android:background="@drawable/summery_button"
-                android:elevation="20dp"/>
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Calories"
-                android:id="@+id/summery_button_calories"
-                android:background="@drawable/summery_button"
-                android:elevation="20dp"/>
     </LinearLayout>
 
 

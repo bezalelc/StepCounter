@@ -47,8 +47,8 @@ public class SummeryActivity extends MainActivity {
         chart = findViewById(R.id.summery_chart);
         buttonSteps = findViewById(R.id.summery_button_steps);
         buttonDistance = findViewById(R.id.summery_button_distance);
-        buttonTime = findViewById(R.id.summery_button_time);
-        buttonCalories = findViewById(R.id.summery_button_calories);
+//        buttonTime = findViewById(R.id.summery_button_time);
+//        buttonCalories = findViewById(R.id.summery_button_calories);
         setSteps();
         updateChart();
         buttonSteps.setOnClickListener(view -> {
@@ -62,10 +62,10 @@ public class SummeryActivity extends MainActivity {
 //        buttonTime.setOnClickListener(view -> {
 //            updateChart();
 //        });
-        buttonCalories.setOnClickListener(view -> {
-            setCalories();
-            updateChart();
-        });
+//        buttonCalories.setOnClickListener(view -> {
+//            setCalories();
+//            updateChart();
+//        });
     }
 
     private void updateChart() {

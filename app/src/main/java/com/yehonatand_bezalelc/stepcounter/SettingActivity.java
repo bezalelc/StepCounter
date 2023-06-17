@@ -21,9 +21,8 @@ public class SettingActivity extends AppCompatActivity {
     private final UserData userData = UserData.getInstance();
     private Spinner spinnerGoal, spinnerBattery;
     ArrayAdapter<CharSequence> adapterGoal, adapterBattery;
-    private SwitchCompat switchCompatNotification;
     private TextView textViewStart, heightTextViewEdit, weightTextViewEdit;
-    private RelativeLayout relativeLayoutStartTime, relativeLayoutNotification, relativeLayoutHeight, relativeLayoutWeight;
+    private RelativeLayout relativeLayoutHeight, relativeLayoutWeight;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -77,26 +76,6 @@ public class SettingActivity extends AppCompatActivity {
         });
         spinnerBattery.setSelection((userData.getSaveBatteryThreshold() / 5) - 1);
 
-        switchCompatNotification = findViewById(R.id.switchCompat);
-        switchCompatNotification.setChecked(userData.isNotification());
-        relativeLayoutNotification = findViewById(R.id.relativeLayoutNotification);
-//        relativeLayoutNotification.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                userData.setNotification(!switchCompatNotification.isChecked());
-//                switchCompatNotification.setChecked(userData.isNotification());
-//            }
-//        });
-        switchCompatNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Handle switch state changes
-            userData.setNotification(isChecked);
-        });
-
-        textViewStart = findViewById(R.id.timeEditText);
-        textViewStart.setText(userData.getStartTimeStr());
-        relativeLayoutStartTime = findViewById(R.id.relativeLayoutStartTime);
-        relativeLayoutStartTime.setOnClickListener(v -> showTimePickerDialog());
-
         relativeLayoutHeight = findViewById(R.id.relativeLayoutHeight);
         relativeLayoutHeight.setOnClickListener(v -> showHeightDialog());
         heightTextViewEdit = findViewById(R.id.heightTextViewEdit);
@@ -119,7 +98,7 @@ public class SettingActivity extends AppCompatActivity {
             finish();
         });
     }
-
+//todo delete ?
     private void showTimePickerDialog() {
 //        Calendar currentTime = Calendar.getInstance();
         int hour = userData.getStartTimeH();

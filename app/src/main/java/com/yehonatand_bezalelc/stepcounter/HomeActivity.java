@@ -134,8 +134,8 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     private void setStatisticViews() {
         TextView textViewDistance = findViewById(R.id.daily_text_view_km_num);
         textViewDistance.setText(Double.toString((double) userData.stepsToDistance(userData.getStepsCounter()) / 100.0));
-        TextView textViewCalories = findViewById(R.id.daily_text_view_calories_num);
-        textViewCalories.setText(Integer.toString(userData.calculateCaloriesBurned(userData.getStepsCounter())));
+//        TextView textViewCalories = findViewById(R.id.daily_text_view_calories_num);
+//        textViewCalories.setText(Integer.toString(userData.calculateCaloriesBurned(userData.getStepsCounter())));
         TextView textViewAverage = findViewById(R.id.daily_text_view_average);
         Integer[] summerySorted = userData.getSummerySorted();
         Log.d("setStatisticViews", Arrays.toString(summerySorted));

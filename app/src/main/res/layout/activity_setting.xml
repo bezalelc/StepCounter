@@ -4,7 +4,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@color/primary"
+              android:background="#1A6E66"
               android:orientation="vertical"
               tools:context=".SettingActivity">
 
@@ -24,7 +24,7 @@
                 android:id="@+id/settingBackButton"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="@color/primary"
+                android:background="@color/teal_700"
                 android:contentDescription="back"
                 android:padding="14dp"
                 app:srcCompat="@drawable/back_btn"/>
@@ -121,39 +121,6 @@
                             android:layout_centerVertical="true"/>
 
 
-                </RelativeLayout>
-
-                <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:id="@+id/relativeLayoutStartTime">
-
-                    <ImageView
-                            android:id="@+id/startTime"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/round_back_notification"
-                            android:padding="12dp"
-                            android:src="@drawable/baseline_logout_24"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="20dp"
-                            android:layout_toEndOf="@+id/startTime"
-                            android:text="Start time"
-                            android:textColor="#FFFFFF"
-                            android:textStyle="bold"/>
-
-                    <TextView
-                            android:id="@+id/timeEditText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:text="08:00"/>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -263,40 +230,6 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"/>
-                </RelativeLayout>
-
-                <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:id="@+id/relativeLayoutNotification">
-
-                    <ImageView
-                            android:id="@+id/s2"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/round_back_notification"
-                            android:padding="12dp"
-                            android:src="@drawable/baseline_logout_24"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="20dp"
-                            android:layout_toEndOf="@+id/s2"
-                            android:text="Notification"
-                            android:textColor="#FFFFFF"
-                            android:textStyle="bold"/>
-
-                    <androidx.appcompat.widget.SwitchCompat
-                            android:id="@+id/switchCompat"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:switchMinWidth="50dp"
-                            android:theme="@style/notificationSwitch"/>
                 </RelativeLayout>
 
             </LinearLayout>
