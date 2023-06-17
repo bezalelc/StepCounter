@@ -26,8 +26,7 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
     private StepCounterService.StepCounterBinder binder = null;
     private boolean isStepCounterSensorExistAndPermissionGranted = false;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_CODE = 100;
-    //    private static final int PROGRESS_BAR_MAX = 1000;
-    // TODO goal provided by user
+
     private final static UserData userData = UserData.getInstance();
 
     /**
@@ -151,7 +150,6 @@ public class HomeActivity extends MainActivity implements ServiceConnection, Ste
         textViewSummery[6] = findViewById(R.id.daily_text_view_summery7);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-//        String[] dayNames = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
         String[] dayNames = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
         calendar.add(Calendar.DAY_OF_YEAR, 0);
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
