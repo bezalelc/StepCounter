@@ -200,25 +200,33 @@
             app:layout_constraintBottom_toTopOf="@+id/bottom_navigation">
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:ignore="MissingConstraints" android:text="Last week daily average: "
-                android:id="@+id/daily_text_view_average_num" app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/daily_text_view_average"
-                android:layout_marginBottom="24dp" app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        />
+            android:id="@+id/daily_text_view_average_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Last week daily average: "
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toStartOf="@+id/daily_text_view_average"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.25"
+            tools:ignore="MissingConstraints" />
+
         <TextView
-                android:text="6789"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/daily_text_view_average"
-                android:textSize="24sp" android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginEnd="16dp" app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/daily_text_view_average_num"
-                android:layout_marginBottom="24dp" app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-                android:layout_marginTop="8dp"/>
+            android:id="@+id/daily_text_view_average"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="24dp"
+            android:text="6789"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/daily_text_view_average_num"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                       app:layout_constraintTop_toBottomOf="@+id/daily_text_view_average"
